@@ -1,0 +1,40 @@
+html {
+    height: 100%;
+    box-sizing: border-box;
+    background:lightblue;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    margin:0;
+    min-height: 100%;
+    position: relative;
+    padding-bottom: 5rem;
+}
+
+
+header {
+    background:#5f5f5f;
+    padding: 3rem;
+}
+
+img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+}
+
+main {
+    margin: 12px auto;
+    box-shadow: 0 10px 5px 1px rgba(0,0,0,.26);
+    background:white;
+    padding: 1rem;
+    max-width: 600px;
+    border-radius: 5px;
+}
