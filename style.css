@@ -2,6 +2,7 @@ html {
     height: 100%;
     box-sizing: border-box;
     background:lightblue;
+    font-size: 28px;
 }
 
 *,
@@ -20,7 +21,18 @@ body {
 
 header {
     background:#5f5f5f;
-    padding: 3rem;
+    padding: 1.1rem;
+}
+
+header a {
+    font-size: 1.5rem;
+    color: lightgrey;
+    margin: 1rem;
+}
+
+header a:hover,#link-selected {
+    color: white;
+    text-decoration: underline;
 }
 
 img {
@@ -28,13 +40,42 @@ img {
     width: auto;
     height: auto;
     max-width: 100%;
+    border-radius: 2px;
 }
 
-main {
+section {
     margin: 12px auto;
     box-shadow: 0 10px 5px 1px rgba(0,0,0,.26);
     background:white;
     padding: 1rem;
     max-width: 600px;
     border-radius: 5px;
+}
+
+select {
+    margin-top: 1rem;
+}
+
+#gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: "left middle right" 
+}
+
+@media (max-width: 700px){
+    #gallery {
+        display: block;
+    }
+}
+
+.left {
+    grid-area: left;
+}
+
+.middle {
+    grid-area: middle;
+}
+
+.right {
+    grid-area: right;
 }
