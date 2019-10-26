@@ -11,23 +11,40 @@ html {
     box-sizing: inherit;
 }
 
+header, section, button {
+    box-shadow: 0 10px 5px 1px rgba(0,0,0,.26);
+}
 
+header, button {
+        background:#232f3e;
+}
+
+button, a {
+    color: lightgrey;
+    border: 0;
+}
+
+nav a {
+    font-size: 1.5rem;
+}
+
+p a, em a {
+    color: black;
+}
 
 body {
     margin:0;
     min-height: 100%;
     position: relative;
     padding-bottom: 5rem;
-    background-image: url("images/big-boat.jpg?1");
+    background-image: url("images/big-boat.jpg");
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover; /* Resize the background image to cover the entire container */
 }
 
-
 header {
     width: 100%;
-    background:#5f5f5f;
     text-align: justify;
     padding-bottom: .8rem;
     padding-top: .8rem;
@@ -41,11 +58,6 @@ nav {
     max-width: 900px;
     margin: auto;
     justify-content: space-between;
-}
-
-nav a {
-    font-size: 1.5rem;
-    color: lightgrey;
 }
 
 header a:hover,#link-selected {
@@ -64,7 +76,6 @@ img {
 
 section {
     margin: 12px auto;
-    box-shadow: 0 10px 5px 1px rgba(0,0,0,.26);
     background:white;
     padding: 1rem;
     max-width: 600px;
@@ -75,22 +86,65 @@ select {
     margin-top: 1rem;
 }
 
+button {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: .375rem .75rem;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    color: white;
+}
+
+footer {
+    font-size: .8rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 2rem;
+}
+
 #gallery {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas: "left middle right" 
+    gap: 2.5rem;
+    padding: 1rem;
 }
 
-.left {
-    grid-area: left;
+#greeting {
+    margin-top: 30vh;
+    text-align: center;
 }
 
-.middle {
-    grid-area: middle;
+#greeting h1 {
+    color: white;
+    text-shadow: 2px 2px 4px #000000;
+    animation: fade-in 2s;
 }
 
-.right {
-    grid-area: right;
+#greeting button {
+    animation: slide-in 3s;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-in {
+    0% {
+        opacity: 0;
+        transform: translateY(150px);
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @media (max-width: 700px){

@@ -12,17 +12,24 @@
     <header>
       <nav>
 	<a href="/">Home</a>
-	<a href="/shop.html">Buy Now</a>
-	<a href="/gallery.html" id="link-selected">Gallery</a>
+	<a href="/shop.html" id="link-selected">Buy Now</a>
+	<a href="/gallery.html">Gallery</a>
 	<a href="/about.html">About</a>
       </nav>
     </header>
-    <div id="gallery">
-      <section><img src="images/cosmo-and-daniel.jpg" alt="Cosmo and Daniel"></section>
-      <section><img src="images/daniel-the-cat.jpg" alt="Daniel the Cat"></section>
-      <section><img src="images/preamble.jpg" alt="Preamble"></section>
-      <section><img src="images/freezer.jpg" alt="In The Freezer"></section>
-      <section style="grid-column: 3"><img src="images/daniel-on-the-deck.jpg" alt="Daniel on the Deck"></section>
-    </div>
+    <section>
+      <div class="image-wrapper">
+        <img src="images/new-label.jpg" alt="Cosmo's Tuna Logo">
+      </div>
+      <div>
+        <select>
+          <option value="product_w">1 can</option><!-- $8 -->
+          <option value="product_x">3 cans</option><!-- $20 -->
+          <option value="product_y">Half Case</option><!-- $75 -->
+          <option value="product_z">Full Case</option><!-- $140 -->
+        </select>
+        <button> Buy Now! </button>
+      </div>
+    </section>
   </body>
 </html>
