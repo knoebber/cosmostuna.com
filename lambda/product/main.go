@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -13,45 +12,59 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/product"
+	"github.com/stripe/stripe-go/sku"
 )
 
-// TODO make route parameter.
+// TODO use stage parameter for testMode.
 const (
 	testMode        = true
 	testModeKeyName = "/test-secret-stripe-api-key"
 	bucketName      = "cosmostuna-backend"
 )
 
-// TODO golinting.
-// ProductResponse is the json response that HandleRequest responds with.
+// ProductResponse is the JSON response that HandleRequest responds with.
 type ProductResponse struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	Name    string        `json:"name"`
+	SKUList []*stripe.SKU `json:"SKUList"`
 }
 
 // HandleRequest processes a lambda request.
 func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGatewayProxyResponse, err error) {
 	var (
 		bytes []byte
+		p     *stripe.Product
 	)
 
 	// TODO only cosmostuna.com
 	response.Headers = map[string]string{"Access-Control-Allow-Origin": "*"}
+
+	productID, ok := request.PathParameters["productID"]
+	if !ok {
+		response.StatusCode = 400
+		err = errors.New("path parameter productID is required")
+		return
+	}
 
 	if err = initStripe(); err != nil {
 		response.StatusCode = 500
 		return
 	}
 
-	responseBody := []ProductResponse{}
-
-	i := product.List(new(stripe.ProductListParams))
-	for i.Next() {
-		p := i.Product()
-		responseBody = append(responseBody, ProductResponse{p.ID, p.Name})
+	p, err = product.Get(productID, nil)
+	if err != nil {
+		response.StatusCode = 500
+		return
 	}
 
-	fmt.Printf("products: %+v\n", responseBody)
+	responseBody := ProductResponse{
+		Name:    p.Name,
+		SKUList: []*stripe.SKU{},
+	}
+
+	i := sku.List(&stripe.SKUListParams{Product: stripe.String(productID)})
+	for i.Next() {
+		responseBody.SKUList = append(responseBody.SKUList, i.SKU())
+	}
 
 	bytes, err = json.Marshal(&responseBody)
 	if err != nil {
