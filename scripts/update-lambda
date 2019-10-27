@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+FUNCTION=$1
+BUCKET=cosmostuna-backend
+PROJECTPATH=$HOME/projects/comptcheshop/lambda/$FUNCTION/
+
+echo entering $PROJECTPATH
+cd $PROJECTPATH
+
+echo building lambda function $FUNCTION
+GOOS=linux go build
+if [ $? -eq 0 ]; then
+    echo build ok
+else
+    echo build failed
+    exit 1
+fi
+
+echo zipping lambda function $FUNCTION
+zip $FUNCTION.zip ./$FUNCTION
+
+echo uploading lambda function $FUNCTION to s3://$BUCKET/$FUNCTION.zip
+aws s3 cp $PROJECTPATH/$FUNCTION.zip s3://$BUCKET/$FUNCTION.zip
+
+echo cleaning up
+rm $FUNCTION
+rm $FUNCTION.zip
+cd -

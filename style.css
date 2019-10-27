@@ -104,6 +104,7 @@ footer {
     flex-direction: column;
     justify-content: flex-end;
     height: 2rem;
+    text-align: center;
 }
 
 #gallery {
@@ -114,7 +115,7 @@ footer {
 }
 
 #greeting {
-    margin-top: 30vh;
+    margin-top: 15vh;
     text-align: center;
 }
 
@@ -126,6 +127,18 @@ footer {
 
 #greeting button {
     animation: slide-in 3s;
+}
+
+#address-form {
+    display: grid;
+    grid-template-columns: 30% 1fr;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    row-gap: 1rem;
+}
+
+#contact {
+    text-align: center;
 }
 
 @keyframes fade-in {

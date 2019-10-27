@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <script type="text/javascript" src="shop.js"></script>
     <title>Cosmo's Tuna</title>
   </head>
   <body>
@@ -21,15 +22,27 @@
       <div class="image-wrapper">
         <img src="images/new-label.jpg" alt="Cosmo's Tuna Logo">
       </div>
-      <div>
-        <select>
-          <option value="product_w">1 can</option><!-- $8 -->
-          <option value="product_x">3 cans</option><!-- $20 -->
-          <option value="product_y">Half Case</option><!-- $75 -->
-          <option value="product_z">Full Case</option><!-- $140 -->
-        </select>
-        <button> Buy Now! </button>
-      </div>
+      <br>
+      We ship to the continental US only.
+      <form id="order-form">
+        <div id="address-form">
+          <strong>Full Name</strong>
+          <input id="name" type="text" required>
+          <strong>Address</strong>
+          <input id="address" type="text" required>
+          <strong>City</strong>
+          <input id="city" type="text" required>
+          <strong>Zip</strong>
+          <input id="zip" type="text" pattern="^[0-9]{5}(-[0-9]{4})?$" required>
+          <strong>State</strong>
+          <input id="state" type="text" pattern="^[A-Z][A-Za-z ]+[a-z]$" required>
+        </div>
+        <div id="product-select">
+          <select>
+          </select>
+        </div>
+        <button type="submit"> Buy Now! </button>
+      </form>
     </section>
   </body>
 </html>
