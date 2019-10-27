@@ -2,12 +2,13 @@
 
 FUNCTION=$1
 BUCKET=cosmostuna-backend
-PROJECTPATH=$HOME/projects/comptcheshop/lambda/$FUNCTION/
+PROJECT_PATH=$HOME/projects/comptcheshop
+LAMBDA_PATH=$PROJECT_PATH/lambda/$FUNCTION/
 
-echo entering $PROJECTPATH
-cd $PROJECTPATH
+echo Entering $LAMBDA_PATH
+cd $LAMBDA_PATH
 
-echo building lambda function $FUNCTION
+echo Building Lambda function $FUNCTION
 GOOS=linux go build
 if [ $? -eq 0 ]; then
     echo build ok
@@ -16,13 +17,20 @@ else
     exit 1
 fi
 
-echo zipping lambda function $FUNCTION
+echo Zipping Lambda function $FUNCTION
 zip $FUNCTION.zip ./$FUNCTION
 
-echo uploading lambda function $FUNCTION to s3://$BUCKET/$FUNCTION.zip
-aws s3 cp $PROJECTPATH/$FUNCTION.zip s3://$BUCKET/$FUNCTION.zip
+echo Uploading Lambda binary to s3://$BUCKET/$FUNCTION.zip
+aws s3 cp $LAMBDA_PATH/$FUNCTION.zip s3://$BUCKET/$FUNCTION.zip
 
-echo cleaning up
+echo Updating Lambda function
+aws lambda update-function-code\
+  --function-name $FUNCTION\
+  --s3-bucket $BUCKET\
+  --s3-key $FUNCTION.zip
+
+echo Cleaning up
 rm $FUNCTION
 rm $FUNCTION.zip
 cd -
+
