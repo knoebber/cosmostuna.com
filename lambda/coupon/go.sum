@@ -21,8 +21,8 @@ github.com/stripe/stripe-go v66.1.1+incompatible h1:D8qUD1rxv+RdXi2qo+IdDELkDevx
 github.com/stripe/stripe-go v66.1.1+incompatible/go.mod h1:A1dQZmO/QypXmsL0T8axYZkSN/uA/T/A64pfKdBAMiY=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
-golang.org/x/net v0.0.0-20191021144547-ec77196f6094 h1:5O4U9trLjNpuhpynaDsqwCk+Tw6seqJz1EbqbnzHrc8=
-golang.org/x/net v0.0.0-20191021144547-ec77196f6094/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
+golang.org/x/net v0.0.0-20191027212002-d64ee3fa515a h1:KrVwiOvCgk/FKLZNj9acpTdmO2HAu96jrVSR+ZGjKs0=
+golang.org/x/net v0.0.0-20191027212002-d64ee3fa515a/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
 golang.org/x/net v0.0.0-20191027233614-53de4c7853b5 h1:IX2aat8xHKk1JAYuDPcTTEMfRaGQh2eHrTcrlp3KJi0=
 golang.org/x/net v0.0.0-20191027233614-53de4c7853b5/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=

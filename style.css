@@ -1,3 +1,7 @@
+:root {
+    --primary-color: #232f3e;
+}
+
 html {
     height: 100%;
     box-sizing: border-box;
@@ -16,7 +20,7 @@ header, section, button {
 }
 
 header, button {
-        background:#232f3e;
+    background: var(--primary-color);
 }
 
 button, a {
@@ -129,16 +133,42 @@ footer {
     animation: slide-in 3s;
 }
 
+#product-grid {
+    grid-template-columns: 1fr 1fr 20%;
+}
+
 #address-form {
-    display: grid;
     grid-template-columns: 30% 1fr;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    row-gap: 1rem;
 }
 
 #contact {
     text-align: center;
+}
+
+.grid-section {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    row-gap: 1rem;
+    display: grid;
+}
+
+.fade-new-element {
+    animation: fade-in .8s;
+}
+
+.spinner {
+  border: 10px solid white;
+  border-top: 10px solid var(--primary-color);
+  border-bottom: 10px solid var(--primary-color);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @keyframes fade-in {

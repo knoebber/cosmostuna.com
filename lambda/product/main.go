@@ -1,38 +1,38 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/knoebber/comptcheshop/lambda/util"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/product"
 	"github.com/stripe/stripe-go/sku"
 )
 
-// TODO use stage parameter for testMode.
-const (
-	testMode        = true
-	testModeKeyName = "/test-secret-stripe-api-key"
-	bucketName      = "cosmostuna-backend"
-)
-
-// ProductResponse is the JSON response that HandleRequest responds with.
+// ProductResponse is the structure for the response body.
 type ProductResponse struct {
-	Name    string        `json:"name"`
-	SKUList []*stripe.SKU `json:"SKUList"`
+	Name    string `json:"name"`
+	SKUList []SKU  `json:"SKUList"`
+}
+
+// SKU is a shop keeping unit for a product.
+// Provides a leaner structure for stripe.SKU information.
+type SKU struct {
+	Quantity int64  `json:"quanitity"`
+	Price    int64  `json:"price"`
+	Image    string `json:"imageURL"`
+	Flavor   string `json:"flavor"`
 }
 
 // HandleRequest processes a lambda request.
 func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGatewayProxyResponse, err error) {
 	var (
-		bytes []byte
-		p     *stripe.Product
+		stripeKey string
+		bytes     []byte
+		p         *stripe.Product
 	)
 
 	// TODO only cosmostuna.com
@@ -45,10 +45,13 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		return
 	}
 
-	if err = initStripe(); err != nil {
+	// TODO Create stage param to choose which key to use.
+	stripeKey, err = util.ReadStringKey(util.TestModeKeyName)
+	if err != nil {
 		response.StatusCode = 500
 		return
 	}
+	stripe.Key = stripeKey
 
 	p, err = product.Get(productID, nil)
 	if err != nil {
@@ -58,12 +61,18 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 
 	responseBody := ProductResponse{
 		Name:    p.Name,
-		SKUList: []*stripe.SKU{},
+		SKUList: []SKU{},
 	}
 
 	i := sku.List(&stripe.SKUListParams{Product: stripe.String(productID)})
 	for i.Next() {
-		responseBody.SKUList = append(responseBody.SKUList, i.SKU())
+		curr := i.SKU()
+		responseBody.SKUList = append(responseBody.SKUList, SKU{
+			Quantity: curr.Inventory.Quantity,
+			Price:    curr.Price,
+			Image:    curr.Image,
+			Flavor:   curr.Attributes["flavor"],
+		})
 	}
 
 	bytes, err = json.Marshal(&responseBody)
@@ -74,37 +83,6 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 	response.Body = string(bytes)
 	response.StatusCode = 200
 	return
-}
-
-func initStripe() error {
-	// Create a S3 client
-	session := session.Must(session.NewSession())
-	svc := s3.New(session)
-
-	getInput := s3.GetObjectInput{
-		Bucket: aws.String(bucketName),
-	}
-
-	// Get the Stripe secret api key
-	if testMode {
-		getInput.Key = aws.String(testModeKeyName)
-	}
-
-	output, err := svc.GetObject(&getInput)
-	if err != nil {
-		return errors.Wrap(err, "failed to get stripe api secret S3 object")
-	}
-
-	buf := new(bytes.Buffer)
-	if _, err := buf.ReadFrom(output.Body); err != nil {
-		return errors.Wrap(err, "failed to read body from S3 object body")
-	}
-
-	key := buf.String()
-
-	// Remove the newline.
-	stripe.Key = key[:len(key)-1]
-	return nil
 }
 
 func main() {

@@ -23,9 +23,14 @@
         <img src="images/new-label.jpg" alt="Cosmo's Tuna Logo">
       </div>
       <br>
+      <noscript><h4 style="color:red">Enable scripts to use the shop</h4></noscript>
+      <div id="product-grid" class="grid-section">
+        <em>loading products...</em>
+        <div class="spinner"></div>
+      </div>
       We ship to the continental US only.
-      <form id="order-form">
-        <div id="address-form">
+      <form>
+        <div id="address-form" class="grid-section">
           <strong>Full Name</strong>
           <input id="name" type="text" required>
           <strong>Address</strong>
@@ -37,12 +42,9 @@
           <strong>State</strong>
           <input id="state" type="text" pattern="^[A-Z][A-Za-z ]+[a-z]$" required>
         </div>
-        <div id="product-select">
-          <select>
-          </select>
-        </div>
         <button type="submit"> Buy Now! </button>
       </form>
     </section>
   </body>
 </html>
+
