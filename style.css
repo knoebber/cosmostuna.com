@@ -1,5 +1,6 @@
 :root {
     --primary-color: #232f3e;
+    --shop-font-size: 20px;
 }
 
 html {
@@ -137,18 +138,41 @@ footer {
     grid-template-columns: 1fr 1fr 20%;
 }
 
-#address-form {
+#order-grid {
     grid-template-columns: 30% 1fr;
+}
+
+#submit-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#form-errors {
+    font-size: var(--shop-font-size);
+    vertical-align: middle;
 }
 
 #contact {
     text-align: center;
 }
 
+#card-element {
+    padding: var(--shop-font-size);
+    border: 1px solid var(--primary-color);
+    border-radius: 3px;
+}
+
+#shop-form button {
+    font-size: .9rem;
+}
+
 .grid-section {
     margin-top: 1rem;
     margin-bottom: 1rem;
-    row-gap: 1rem;
+    row-gap: var(--shop-font-size);
+    font-size: var(--shop-font-size);
     display: grid;
 }
 
@@ -167,8 +191,12 @@ footer {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes fade-in {
