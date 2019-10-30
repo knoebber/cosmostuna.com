@@ -1,5 +1,6 @@
 :root {
     --primary-color: #232f3e;
+    /* TODO factor out shop-font-size by setting it as the root. Scale other things up. */
     --shop-font-size: 20px;
 }
 
@@ -31,10 +32,20 @@ button, a {
 
 nav a {
     font-size: 1.5rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
 }
 
 p a, em a {
     color: black;
+}
+
+label {
+    cursor: pointer;
+}
+
+label:hover {
+    text-decoration: underline;
 }
 
 body {
@@ -134,12 +145,17 @@ footer {
     animation: slide-in 3s;
 }
 
+#contact {
+    text-align: center;
+}
+
+/* Shop Style */
 #product-grid {
-    grid-template-columns: 1fr 1fr 20%;
+    grid-template-columns: 33% 1fr 1fr;
 }
 
 #order-grid {
-    grid-template-columns: 30% 1fr;
+    grid-template-columns: 1fr 66%;
 }
 
 #submit-row {
@@ -154,23 +170,21 @@ footer {
     vertical-align: middle;
 }
 
-#contact {
-    text-align: center;
-}
-
 #card-element {
     padding: var(--shop-font-size);
-    border: 1px solid var(--primary-color);
+    border: 1px solid #cdc7c2;
     border-radius: 3px;
+    padding: 8px;
 }
 
 #shop-form button {
-    font-size: .9rem;
+    font-size: var(--shop-font-size);
 }
 
 .grid-section {
     margin-top: 1rem;
     margin-bottom: 1rem;
+    font-family: san-serif;
     row-gap: var(--shop-font-size);
     font-size: var(--shop-font-size);
     display: grid;
@@ -218,12 +232,38 @@ footer {
     }
 }
 
-@media (max-width: 700px){
+/* Break point - <section> takes up entire screen width */
+@media (max-width: 600px){
+    section {
+        margin: 5px;
+    }
+
     nav a {
         font-size: 1rem;
+        margin: 0;
+        /* TODO hamburger */
     }
-    
+
+    label:hover {
+        text-decoration: none;
+    }
+
     #gallery {
         display: block;
+    }
+
+    #order-grid {
+        grid-template-columns: 1fr;
+        row-gap: unset;
+    }
+
+    #order-grid input {
+        margin-bottom: 1rem;
+    }
+
+    #submit-row {
+        flex-direction: column-reverse;
+        align-items: center;
+        height: 80px;
     }
 }

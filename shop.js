@@ -117,7 +117,6 @@ function loadShop() {
     .catch((err) => console.log(err)))).then(buildProductGrid);
 
   const form = document.getElementById('shop-form');
-  const submitButton = document.getElementById('place-order');
   const formErrors = document.getElementById('form-errors');
 
   // Initialize Stripe.
@@ -126,8 +125,9 @@ function loadShop() {
 
   const style = {
     base: {
-      fontSize: '20px',
-      color: '#32325d',
+      fontFamily: 'serif',
+      fontSize: '19px',
+      color: '#232f3e',
     },
   };
 
@@ -136,10 +136,8 @@ function loadShop() {
 
   card.addEventListener('change', ({ error }) => {
     if (error) {
-      submitButton.setAttribute('disabled', true);
       formErrors.textContent = error.message;
     } else {
-      submitButton.setAttribute('disabled', false);
       formErrors.textContent = '';
     }
   });
