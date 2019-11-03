@@ -3,34 +3,70 @@
 FUNCTION=$1
 BUCKET=cosmostuna-backend
 PROJECT_PATH=$HOME/projects/comptcheshop
-LAMBDA_PATH=$PROJECT_PATH/lambda/$FUNCTION/
+LAMBDA_PATH=$PROJECT_PATH/lambda
+START_PATH=`pwd`
 
-echo Entering $LAMBDA_PATH
 cd $LAMBDA_PATH
+pwd
+
+MODULE_PATH="$(find . -type f -exec grep -l "module $FUNCTION" {} \;)"
+if [ -z "$MODULE_PATH" ]; then
+    echo Failed to find module for $FUNCTION
+    exit 1
+else
+    echo Found lambda module at $MODULE_PATH
+fi
+
+echo Entering build path
+cd "$(dirname $MODULE_PATH)"
+if [ $? -eq 0 ]; then
+    pwd
+else
+    echo Failed to find $FUNCTION
+    exit 1
+fi
 
 echo Building Lambda function $FUNCTION
 GOOS=linux go build
 if [ $? -eq 0 ]; then
-    echo build ok
+    echo Build ok
 else
-    echo build failed
+    echo Build failed
     exit 1
 fi
 
 echo Zipping Lambda function $FUNCTION
 zip $FUNCTION.zip ./$FUNCTION
+if [ $? -eq 0 ]; then
+    echo Zip ok
+else
+    echo Zip failed
+    exit
+fi
 
 echo Uploading Lambda binary to s3://$BUCKET/$FUNCTION.zip
-aws s3 cp $LAMBDA_PATH/$FUNCTION.zip s3://$BUCKET/$FUNCTION.zip
+aws s3 cp $FUNCTION.zip s3://$BUCKET/$FUNCTION.zip
+if [ $? -eq 0 ]; then
+    echo Upload ok
+else
+    echo Upload failed
+    exit 1
+fi
 
 echo Updating Lambda function
 aws lambda update-function-code\
   --function-name $FUNCTION\
   --s3-bucket $BUCKET\
   --s3-key $FUNCTION.zip
+if [ $? -eq 0 ]; then
+    echo Update ok
+else
+    echo Upload failed
+    exit 1
+fi
+
 
 echo Cleaning up
 rm $FUNCTION
 rm $FUNCTION.zip
-cd -
-
+cd $START_PATH
