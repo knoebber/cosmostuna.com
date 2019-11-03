@@ -1,6 +1,5 @@
 const APIGateway = 'https://p4b43mv7al.execute-api.us-west-2.amazonaws.com/dev'
 const productID = 'prod_G3nbhaoJkINZ5v';
-const stripePublicKey = 'pk_test_qUdrpKjmC5gZ7jcuuHeRb8Au006WnfLwAt';
 
 function fetchProduct() {
   return fetch(`${APIGateway}/products/${productID}`)
@@ -32,7 +31,7 @@ function fetchCoupons() {
 
 function responseHandler(response, url) {
   if (!response.ok) {
-    throw `failed to GET ${url}`;
+    throw `failed request to ${url}`;
   }
   return response.json();
 }
@@ -54,20 +53,27 @@ function buildProductGrid([product, { offers, coupons }]) {
   // Only supports one shop keeping unit for now.
   // In the future there could be more flavors etc.
   const {
+    id: SKUID,
     price: productPrice,
-    quantity: remainingQuantity,
+    quantity: remainingQuantity, // TODO use this to remove unavailable products.
   } = SKUList[0];
 
-  const grid = document.getElementById('product-grid');
-  grid.innerHTML = '';
+  const productGrid = document.getElementById('product-grid');
+  productGrid.innerHTML = '';
+  productGrid.setAttribute('data-sku-id', SKUID)
 
   offers.forEach(({ quantity, couponID }) => {
     const title = document.createElement('label');
     const price = document.createElement('em');
     const input = document.createElement('input');
 
-    if (quantity == 1) title.innerHTML = `${quantity} ${productName}`;
-    else title.innerHTML = `${quantity} ${productName}s`;
+    if (quantity == 1) {
+      title.innerHTML = `${quantity} ${productName}`;
+      // Set buying one can to the default.
+      input.setAttribute('checked', true);
+    } else {
+      title.innerHTML = `${quantity} ${productName}s`;
+    }
 
     const target = `input-quantity-${quantity}`;
     title.setAttribute('for', target)
@@ -85,26 +91,65 @@ function buildProductGrid([product, { offers, coupons }]) {
     // Fade the elements in as they are added to the DOM.
     [title, price, input].forEach((e) => {
       e.classList.add('fade-new-element');
-      grid.append(e);
+      productGrid.append(e);
     });
   });
 }
 
 function placeOrder(token) {
-  const address = [
+  const productGrid = document.getElementById('product-grid');
+  const SKUID = productGrid.getAttribute('data-sku-id');
+  const quantity = Array.from(productGrid.children).filter(e => e.checked)[0].value;
+  
+  const formValues = [
     'name',
     'address',
     'city',
     'zip',
     'state',
+    'email',
   ].reduce((result, curr) => ({
     [curr]: document.getElementById(curr).value,
     ...result
   }), {});
 
-  console.log(address);
+  const orderBody = {
+    email: formValues.email,
+    shipping: {
+      name: formValues.name,
+      address: {
+        city: formValues.city,
+        line1: formValues.address,
+        postal_code: formValues.zip,
+        state: formValues.state,
+      },
+    },
+    items: [{
+      quantity: parseInt(quantity, 10),
+      parent: SKUID,
+    }],
+  };
 
-  console.log(token);
+  console.log(orderBody);
+  const url = `${APIGateway}/orders`;
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(orderBody),
+  })
+    .then((response) => responseHandler(response, url))
+    .then(({ target, message, orderID }) => {
+      if (orderID) {
+        window.location.href = `/confirm.html?order=${orderID}`
+      } else {
+        const formErrors = document.getElementById('form-errors');
+        formErrors.innerHTML = message;
+        // TODO highlight target.
+      }
+    });
 }
 
 function loadShop() {
@@ -117,41 +162,10 @@ function loadShop() {
     .catch((err) => console.log(err)))).then(buildProductGrid);
 
   const form = document.getElementById('shop-form');
-  const formErrors = document.getElementById('form-errors');
 
-  // Initialize Stripe.
-  const stripe = Stripe(stripePublicKey);
-  const elements = stripe.elements();
-
-  const style = {
-    base: {
-      fontFamily: 'serif',
-      fontSize: '19px',
-      color: '#232f3e',
-    },
-  };
-
-  const card = elements.create('card', { style });
-  card.mount('#card-element');
-
-  card.addEventListener('change', ({ error }) => {
-    if (error) {
-      formErrors.textContent = error.message;
-    } else {
-      formErrors.textContent = '';
-    }
-  });
-
-  form.addEventListener('submit', async (event) => {
+  form.addEventListener('submit', (event) => {
     event.preventDefault();
-
-    const { token, error } = await stripe.createToken(card);
-
-    if (error) {
-      formErrors.textContent = error.message;
-    } else {
-      placeOrder(token);
-    }
+    placeOrder()
   });
 }
 

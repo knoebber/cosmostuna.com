@@ -2,7 +2,9 @@ package util
 
 import (
 	"bytes"
+	"encoding/json"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -70,4 +72,16 @@ func ReadStringKey(key string) (string, error) {
 
 	// Remove the newline. TODO why is there a newline.
 	return value[:len(value)-1], nil
+}
+
+// SetResponseBody attempts to marshal body into the Lambda response body.
+func SetResponseBody(response *events.APIGatewayProxyResponse, responseBody interface{}) {
+	bytes, err := json.Marshal(responseBody)
+	if err != nil {
+		response.StatusCode = 500
+		return
+	}
+
+	response.Body = string(bytes)
+	response.StatusCode = 200
 }

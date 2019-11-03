@@ -1,5 +1,6 @@
 :root {
     --primary-color: #232f3e;
+    --grey: #cdc7c2;
     /* TODO factor out shop-font-size by setting it as the root. Scale other things up. */
     --shop-font-size: 20px;
 }
@@ -17,6 +18,10 @@ html {
     box-sizing: inherit;
 }
 
+button, a, p, label, input {
+    font-family: serif;
+}
+
 header, section, button {
     box-shadow: 0 10px 5px 1px rgba(0,0,0,.26);
 }
@@ -26,7 +31,7 @@ header, button {
 }
 
 button, a {
-    color: lightgrey;
+    color: var(--grey);
     border: 0;
 }
 
@@ -46,6 +51,12 @@ label {
 
 label:hover {
     text-decoration: underline;
+}
+
+input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 body {
@@ -154,6 +165,19 @@ footer {
     grid-template-columns: 33% 1fr 1fr;
 }
 
+#product-grid input {
+    justify-self: end;
+    border-radius: 50%;
+    width: var(--shop-font-size);
+    height: var(--shop-font-size);
+    border: 2px solid var(--grey);
+    transition: 0.2s all linear;
+}
+
+#product-grid input:checked{
+    border: 5px solid var(--primary-color);
+}
+
 #order-grid {
     grid-template-columns: 1fr 66%;
 }
@@ -170,21 +194,22 @@ footer {
     vertical-align: middle;
 }
 
-#card-element {
-    padding: var(--shop-font-size);
-    border: 1px solid #cdc7c2;
-    border-radius: 3px;
-    padding: 8px;
+#shop-form button {
+    font-size: var(--shop-font-size);
 }
 
-#shop-form button {
+#order-grid input, #card-element {
+    border: 1px solid var(--grey);
+    border-radius: 3px;
+    border-radius: 3px;
+    padding-left: 5px;
+    padding-top: 5px;
     font-size: var(--shop-font-size);
 }
 
 .grid-section {
     margin-top: 1rem;
     margin-bottom: 1rem;
-    font-family: san-serif;
     row-gap: var(--shop-font-size);
     font-size: var(--shop-font-size);
     display: grid;

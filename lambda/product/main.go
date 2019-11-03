@@ -21,6 +21,7 @@ type ProductResponse struct {
 // SKU is a shop keeping unit for a product.
 // Provides a leaner structure for stripe.SKU information.
 type SKU struct {
+	ID       string `json:"id"`
 	Quantity int64  `json:"quanitity"`
 	Price    int64  `json:"price"`
 	Image    string `json:"imageURL"`
@@ -68,6 +69,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 	for i.Next() {
 		curr := i.SKU()
 		responseBody.SKUList = append(responseBody.SKUList, SKU{
+			ID:       curr.ID,
 			Quantity: curr.Inventory.Quantity,
 			Price:    curr.Price,
 			Image:    curr.Image,
