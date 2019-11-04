@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+TEMPLATE_PATH=$HOME/projects/comptcheshop/templates
+START_PATH=`pwd`
+
+cd $TEMPLATE_PATH
+for f in [a-zA-Z]*.php
+do
+    NAME="$(basename $f .php)"
+    php $f > ../$NAME.html
+done
+
+cd $START_PATH
