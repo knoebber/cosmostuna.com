@@ -9,9 +9,6 @@ function fetchProduct() {
       }
       return response.json();
     })
-    .then((json) => {
-      console.log(json);
-    })
     .catch((err) => console.log(err));
 }
 
@@ -22,9 +19,6 @@ function fetchCoupons() {
         throw 'failed to get coupons';
       }
       return response.json();
-    })
-    .then((json) => {
-      console.log(json);
     })
     .catch((err) => console.log(err));
 }
@@ -130,7 +124,6 @@ function placeOrder(token) {
     }],
   };
 
-  console.log(orderBody);
   const url = `${APIGateway}/orders`;
 
   fetch(url, {

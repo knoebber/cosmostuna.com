@@ -22,7 +22,7 @@ include('_header.php');
       <label for="state">State</label><input id="state" type="text" pattern="^[A-Z][A-Za-z ]+[a-z]$" required>
       <label for="email">Email</label><input id="email" type="email" required>
     </div>
-    <div id="submit-row">
+    <div id="submit-row" class="info-row">
       <button type="submit">Next</button>
       <span id="form-errors" for="place-order" role="alert"></label>
     </div>

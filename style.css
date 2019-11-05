@@ -182,19 +182,12 @@ footer {
     grid-template-columns: 1fr 66%;
 }
 
-#submit-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
 #form-errors {
     font-size: var(--shop-font-size);
     vertical-align: middle;
 }
 
-#shop-form button {
+#submit-row button {
     font-size: var(--shop-font-size);
 }
 
@@ -207,12 +200,27 @@ footer {
     font-size: var(--shop-font-size);
 }
 
+#confirm-order {
+    font-size: var(--shop-font-size);
+}
+
+#confirm-form {
+    margin-top: 1rem;
+}
+
 .grid-section {
     margin-top: 1rem;
-    margin-bottom: 1rem;
     row-gap: var(--shop-font-size);
     font-size: var(--shop-font-size);
     display: grid;
+}
+
+.info-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
 }
 
 .fade-new-element {

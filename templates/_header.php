@@ -15,6 +15,7 @@ function buildLinks() {
     } else {
       echo "<a href=\"/$path\">$name</a>";
     }
+    echo "\n";
   }
 }
 ?>

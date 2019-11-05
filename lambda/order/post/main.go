@@ -53,6 +53,21 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 	requestBody.Items[0].Type = stripe.String(string(stripe.OrderItemTypeSKU))
 	requestBody.Shipping.Address.Country = stripe.String("US")
 
+	var validOrder bool
+	for _, offer := range util.BulkOffers {
+		// Only accept orders that match one of our offers.
+		if offer.Quantity == *requestBody.Items[0].Quantity {
+			requestBody.Coupon = offer.CouponID
+			validOrder = true
+		}
+	}
+	if !validOrder {
+		responseBody.Message = "Order is invalid."
+		responseBody.Target = "product-grid"
+		util.SetResponseBody(&response, &responseBody)
+		return
+	}
+
 	o, err = order.New(&requestBody)
 	if err != nil {
 		responseBody.Message = "failed to POST order to Stripe"

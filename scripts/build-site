@@ -3,7 +3,7 @@ TEMPLATE_PATH=$HOME/projects/comptcheshop/templates
 START_PATH=`pwd`
 
 cd $TEMPLATE_PATH
-for f in [a-zA-Z]*.php
+for f in [a-z]*.php
 do
     NAME="$(basename $f .php)"
     php $f > ../$NAME.html
