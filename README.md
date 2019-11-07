@@ -1,4 +1,4 @@
-# cosmostuna.com - statically hosted ecommerce site.
+# cosmostuna.com - Statically Hosted Ecommerce Site
 
 Payment processing through Stripe.
 
