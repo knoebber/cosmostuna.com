@@ -5,10 +5,8 @@ include('_header.php');
 ?>
 <section>
   <noscript><h4 style="color:red">Enable scripts to use the shop</h4></noscript>
-  <p>
-    You will be emailed with the tracking number once the order is processed.
-    Please review your order before submitting payment.
-  </p>
+  <p>Please review your order.</p>
+  <hr>
   <div id="confirm-order">
     <em>loading order...</em>
     <div class="spinner"></div>
@@ -21,4 +19,4 @@ include('_header.php');
     </div>
   </form>
 </section>
-<?php include('_footer.php') ?>
+<?php include('_footer.php'); ?>

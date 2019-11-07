@@ -1,4 +1,3 @@
-const APIGateway = 'https://p4b43mv7al.execute-api.us-west-2.amazonaws.com/dev'
 const productID = 'prod_G3nbhaoJkINZ5v';
 
 function fetchProduct() {
@@ -21,18 +20,6 @@ function fetchCoupons() {
       return response.json();
     })
     .catch((err) => console.log(err));
-}
-
-function responseHandler(response, url) {
-  if (!response.ok) {
-    throw `failed request to ${url}`;
-  }
-  return response.json();
-}
-
-function formatCentPrice(cents) {
-  const dollars = cents / 100;
-  return dollars.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 }
 
 function buildProductGrid([product, { offers, coupons }]) {
@@ -114,7 +101,7 @@ function placeOrder(token) {
       address: {
         city: formValues.city,
         line1: formValues.address,
-        postal_code: formValues.zip,
+        postalCode: formValues.zip,
         state: formValues.state,
       },
     },

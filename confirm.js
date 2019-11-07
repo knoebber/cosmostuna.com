@@ -1,5 +1,28 @@
-const APIGateway = 'https://p4b43mv7al.execute-api.us-west-2.amazonaws.com/dev'
 const stripePublicKey = 'pk_test_qUdrpKjmC5gZ7jcuuHeRb8Au006WnfLwAt';
+
+function submitPayment({ id: token }, orderID) {
+  fetch(`${APIGateway}/orders`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      token,
+      orderID,
+    }),
+  })
+    .then((response) => {
+      if (response.ok) {
+        window.location.href = '/thank-you.html';
+      } else {
+        throw 'failed to submit order payment';
+      }
+    }).catch((err) => {
+      console.log(err)
+      const formErrors = document.getElementById('form-errors');
+      formErrors.textContent = 'Unable to process payment.';
+    });
+}
 
 function loadConfirm() {
   const form = document.getElementById('confirm-form');
@@ -18,6 +41,7 @@ function loadConfirm() {
       email,
       amount,
       items,
+      status,
       shipping: {
         name,
         address: {
@@ -55,7 +79,7 @@ function loadConfirm() {
           value: `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`},
         {
           name: 'Amount Due',
-          value: (amount / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' }),
+          value: formatCentPrice(amount),
         },
       ].forEach(({ name, value }) => {
         const infoRow = document.createElement('div');
@@ -70,6 +94,12 @@ function loadConfirm() {
         infoRow.append(title, text);
         confirmOrder.append(infoRow);
       });
+
+      if (status !== 'created') {
+        formErrors.textContent = 'This order is already paid.';
+        document.getElementsByTagName('button')[0].remove()
+        return;
+      }
     })
     .catch((err) => {
       console.log(err)
@@ -84,7 +114,7 @@ function loadConfirm() {
   const style = {
     base: {
       fontFamily: 'serif',
-      fontSize: '19px',
+      fontSize: '25px',
       color: '#232f3e',
     },
   };
@@ -103,12 +133,12 @@ function loadConfirm() {
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const { token, error } = await stripe.createToken(card);
+    const { token, error } = await stripe.createToken(card, orderID);
 
     if (error) {
       formErrors.textContent = error.message;
     } else {
-      placeOrder(token);
+      submitPayment(token, orderID);
     }
   });
 }

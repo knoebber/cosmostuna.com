@@ -1,4 +1,4 @@
 dry:
-	./scripts/build-site --dryrun
+	./scripts/upload-site --dryrun
 publish:
 	./scripts/upload-site

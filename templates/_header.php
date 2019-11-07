@@ -30,12 +30,24 @@ function buildLinks() {
     <link rel="stylesheet" type="text/css" href="style.css" />
     <!-- Include Stripe script on all pages for fraud protection -->
     <!-- https://stripe.com/docs/web/setup -->
-    <script src="https://js.stripe.com/v3/" async></script>
-    <?php
-    if (isset($jsHandler)) {
-      echo "<script type=\"text/javascript\" src=\"$jsHandler\" async></script>";
-    }
-    ?>
+    <script type="text/javascript" src="https://js.stripe.com/v3/" async></script>
+    <?php if (isset($jsHandler)) :?>
+      <script type="text/javascript">
+       // Declare shared JavaScript here.
+       const APIGateway = 'https://p4b43mv7al.execute-api.us-west-2.amazonaws.com/dev';
+       function responseHandler(response, url) {
+         if (!response.ok) {
+           throw `failed request to ${url}`;
+         }
+         return response.json();
+       }
+       function formatCentPrice(cents) {
+         const dollars = cents / 100;
+         return dollars.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+       }
+      </script>
+      <script type="text/javascript" src="<?=$jsHandler?>" async></script>
+    <?php endif; ?>
     <title>Cosmo's Tuna</title>
   </head>
   <body>

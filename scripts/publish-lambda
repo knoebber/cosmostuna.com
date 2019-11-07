@@ -9,7 +9,7 @@ START_PATH=`pwd`
 cd $LAMBDA_PATH
 pwd
 
-MODULE_PATH="$(find . -type f -exec grep -l "module $FUNCTION" {} \;)"
+MODULE_PATH="$(find . -type f -exec grep -l "module $FUNCTION" {} \; | head -n 1)"
 if [ -z "$MODULE_PATH" ]; then
     echo Failed to find module for $FUNCTION
     exit 1
