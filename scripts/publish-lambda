@@ -2,7 +2,7 @@
 
 FUNCTION=$1
 BUCKET=cosmostuna-backend
-PROJECT_PATH=$HOME/projects/comptcheshop
+PROJECT_PATH=$HOME/projects/comptche-shop
 LAMBDA_PATH=$PROJECT_PATH/lambda
 START_PATH=`pwd`
 
