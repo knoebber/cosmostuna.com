@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/knoebber/comptcheshop/lambda/util"
@@ -32,7 +30,6 @@ type SKU struct {
 func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGatewayProxyResponse, err error) {
 	var (
 		stripeKey string
-		bytes     []byte
 		p         *stripe.Product
 	)
 
@@ -77,13 +74,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		})
 	}
 
-	bytes, err = json.Marshal(&responseBody)
-	if err != nil {
-		return
-	}
-
-	response.Body = string(bytes)
-	response.StatusCode = 200
+	util.SetResponseBody(&response, &responseBody)
 	return
 }
 

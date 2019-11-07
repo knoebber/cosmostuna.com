@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/knoebber/comptcheshop/lambda/util"
@@ -22,10 +20,7 @@ type CouponResponse struct {
 // HandleRequest processes a Lambda request.
 // Creates a JSON response body of coupon ID's mapped to their discount amounts.
 func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGatewayProxyResponse, err error) {
-	var (
-		stripeKey string
-		bytes     []byte
-	)
+	var stripeKey string
 
 	// TODO only cosmostuna.com, check if this does anything.
 	response.Headers = map[string]string{"Access-Control-Allow-Origin": "*"}
@@ -49,13 +44,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		responseBody.Coupons[curr.ID] = curr.AmountOff
 	}
 
-	bytes, err = json.Marshal(&responseBody)
-	if err != nil {
-		return
-	}
-
-	response.Body = string(bytes)
-	response.StatusCode = 200
+	util.SetResponseBody(&response, &responseBody)
 	return
 }
 

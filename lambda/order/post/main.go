@@ -70,10 +70,10 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 
 	o, err = order.New(&requestBody)
 	if err != nil {
-		responseBody.Message = "failed to POST order to Stripe"
-	} else {
-		responseBody.OrderID = o.ID
+		response.StatusCode = 500
+		return
 	}
+	responseBody.OrderID = o.ID
 
 	util.SetResponseBody(&response, &responseBody)
 	return

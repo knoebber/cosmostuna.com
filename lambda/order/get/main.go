@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -15,7 +14,6 @@ import (
 func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGatewayProxyResponse, err error) {
 	var (
 		stripeKey string
-		bytes     []byte
 		o         *stripe.Order
 	)
 
@@ -42,13 +40,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		return
 	}
 
-	bytes, err = json.Marshal(&o)
-	if err != nil {
-		return
-	}
-
-	response.Body = string(bytes)
-	response.StatusCode = 200
+	util.SetResponseBody(&response, o)
 	return
 }
 
