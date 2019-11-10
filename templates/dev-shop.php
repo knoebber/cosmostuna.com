@@ -18,8 +18,8 @@ include('_header.php');
       <label for="name">Full Name</label><input id="name" type="text" required>
       <label for="address">Address</label><input id="address" type="text" required>
       <label for="city">City</label><input id="city" type="text" required>
-      <label for="zip">Zip</label><input id="zip" type="text" pattern="^[0-9]{5}(-[0-9]{4})?$" required>
       <label for="state">State</label><input id="state" type="text" required>
+      <label for="zip">Zip</label><input id="zip" type="text" pattern="^[0-9]{5}(-[0-9]{4})?$" required>
       <label for="email">Email</label><input id="email" type="email" required>
     </div>
     <div id="submit-row" class="info-row">

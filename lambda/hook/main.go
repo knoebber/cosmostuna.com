@@ -112,7 +112,6 @@ func sendEmail(address string, subject, body, tracking string) error {
 
 	htmlBody := fmt.Sprintf(`<h3>cosmostuna.com</h3><p>%s</p>`, body)
 	if tracking != "" {
-		fmt.Println("here!") //TODO
 		htmlBody = fmt.Sprintf(`
 %s
 <a 
