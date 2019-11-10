@@ -11,12 +11,18 @@ import (
 	"github.com/pkg/errors"
 )
 
-const backendBucket = "cosmostuna-backend"
-
 const (
 	// TestModeKeyName is the key in backendBucket that holds the Stripe test mode secret key.
 	TestModeKeyName = "/test-secret-stripe-api-key"
+
+	// TestHookSecretName is the key in backendBucket that verifies hook requests from Stripe.
+	TestHookSecretName = "/test-hook-secret"
+
+	// AWSRegion is where AWS resources are created.
+	AWSRegion = "us-west-2"
 )
+
+const backendBucket = "cosmostuna-backend"
 
 // BulkOffer maps a quantity of items to a discount.
 // If a customer buys that quantity, the discount will be applied.
