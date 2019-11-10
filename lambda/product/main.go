@@ -10,8 +10,7 @@ import (
 	"github.com/stripe/stripe-go/sku"
 )
 
-// ProductResponse is the structure for the response body.
-type ProductResponse struct {
+type productResponse struct {
 	Name    string `json:"name"`
 	SKUList []SKU  `json:"SKUList"`
 }
@@ -57,7 +56,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		return
 	}
 
-	responseBody := ProductResponse{
+	responseBody := productResponse{
 		Name:    p.Name,
 		SKUList: []SKU{},
 	}

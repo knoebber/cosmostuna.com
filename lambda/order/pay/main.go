@@ -10,8 +10,7 @@ import (
 	"github.com/stripe/stripe-go/order"
 )
 
-// PayRequest is request body that HandleRequest expects.
-type PayRequest struct {
+type payRequest struct {
 	Token   string `json:"token"`
 	OrderID string `json:"orderID"`
 }
@@ -20,7 +19,7 @@ type PayRequest struct {
 func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGatewayProxyResponse, err error) {
 	var (
 		stripeKey   string
-		requestBody PayRequest
+		requestBody payRequest
 	)
 
 	// TODO only cosmostuna.com

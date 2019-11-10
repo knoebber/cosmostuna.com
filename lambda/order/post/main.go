@@ -10,8 +10,7 @@ import (
 	"github.com/stripe/stripe-go/order"
 )
 
-// OrderResponse is the JSON response for the handler.
-type OrderResponse struct {
+type orderResponse struct {
 	OrderID string `json:"orderID"`
 	Message string `json:"message"`
 	Target  string `json:"target"`
@@ -22,7 +21,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 	var (
 		stripeKey    string
 		requestBody  stripe.OrderParams
-		responseBody OrderResponse
+		responseBody orderResponse
 		o            *stripe.Order
 	)
 
