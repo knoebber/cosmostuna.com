@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-aws s3 sync $HOME/projects/comptcheshop s3://cosmostuna.com \
+aws s3 sync $HOME/projects/comptche-shop s3://cosmostuna.com \
 --exclude "*" \
 --include "*.html" \
 --include "*.png" \

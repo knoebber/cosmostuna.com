@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-TEMPLATE_PATH=$HOME/projects/comptcheshop/templates
+TEMPLATE_PATH=$HOME/projects/comptche-shop/templates
 START_PATH=`pwd`
 
 cd $TEMPLATE_PATH
