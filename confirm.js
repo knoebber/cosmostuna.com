@@ -1,6 +1,8 @@
 const stripePublicKey = 'pk_test_qUdrpKjmC5gZ7jcuuHeRb8Au006WnfLwAt';
 
 function submitPayment({ id: token }, orderID) {
+  setDisabled('button', true);
+
   fetch(`${APIGateway}/orders`, {
     method: 'PUT',
     headers: {
@@ -17,10 +19,13 @@ function submitPayment({ id: token }, orderID) {
       } else {
         throw 'failed to submit order payment';
       }
-    }).catch((err) => {
-      console.log(err)
-      const formErrors = document.getElementById('form-errors');
-      formErrors.textContent = 'Unable to process payment.';
+    })
+    .catch((err) => {
+      console.log(err);
+      formError('Unable to process payment')
+    })
+    .finally(() => {
+      setDisabled('button', false);
     });
 }
 
@@ -96,15 +101,16 @@ function loadConfirm() {
       });
 
       if (status !== 'created') {
-        formErrors.textContent = 'This order is already paid.';
+        // TODO type switch on status, include link in email.
+        formError('This order is already paid.');
         document.getElementsByTagName('button')[0].remove()
         return;
       }
     })
     .catch((err) => {
       console.log(err)
-      formErrors.textContent = 'Unable to retrieve order.';
-      document.getElementsByTagName('button')[0].remove()
+      formError('Unable to retrieve order');
+      document.getElementsByTagName('button')[0].remove();
     });
 
   // Initialize Stripe.
@@ -114,7 +120,7 @@ function loadConfirm() {
   const style = {
     base: {
       fontFamily: 'serif',
-      fontSize: '25px',
+      fontSize: '20px',
       color: '#232f3e',
     },
   };

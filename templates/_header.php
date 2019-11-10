@@ -28,12 +28,12 @@ function buildLinks() {
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="style.css" />
-    <!-- Include Stripe script on all pages for fraud protection -->
+    <!-- Include Stripe script on all pages for fraud protection. -->
     <!-- https://stripe.com/docs/web/setup -->
     <script type="text/javascript" src="https://js.stripe.com/v3/" async></script>
     <?php if (isset($jsHandler)) :?>
+      <!-- Shared JavaScript is declared here. -->
       <script type="text/javascript">
-       // Declare shared JavaScript here.
        const APIGateway = 'https://p4b43mv7al.execute-api.us-west-2.amazonaws.com/dev';
        function responseHandler(response, url) {
          if (!response.ok) {
@@ -41,9 +41,38 @@ function buildLinks() {
          }
          return response.json();
        }
+
        function formatCentPrice(cents) {
          const dollars = cents / 100;
          return dollars.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+       }
+
+       function setDisabled(selector, disabled) {
+         const element = document.querySelector(selector);
+         if (element && disabled) {
+           element.setAttribute('disabled', true);
+         } else if (element && !disabled) {
+           element.removeAttribute('disabled');
+         }
+       }
+
+       function formError(message, target) {
+         const formErrors = document.getElementById('form-errors');
+         if (!formErrors){
+           console.error('expected #form-errors element');
+           return
+         }
+         formErrors.textContent = message;
+
+         const badInput = document.getElementById(target);
+         if (!badInput) {
+           return;
+         }
+
+         badInput.classList.add('form-error');
+         badInput.addEventListener('change', () => {
+           badInput.classList.remove('form-error');
+         }, { once: true });
        }
       </script>
       <script type="text/javascript" src="<?=$jsHandler?>" async></script>

@@ -36,14 +36,25 @@ function buildProductGrid([product, { offers, coupons }]) {
   const {
     id: SKUID,
     price: productPrice,
-    quantity: remainingQuantity, // TODO use this to remove unavailable products.
+    quantity: productsLeft,
   } = SKUList[0];
 
   const productGrid = document.getElementById('product-grid');
-  productGrid.innerHTML = '';
   productGrid.setAttribute('data-sku-id', SKUID)
+  if (productsLeft < 1){
+    productGrid.innerHTML = 'Out of stock.';
+    document.getElementById('order-grid').remove()
+    document.getElementById('submit-row').remove()
+    return
+  } else {
+    productGrid.innerHTML = '';
+  }
 
   offers.forEach(({ quantity, couponID }) => {
+    if (productsLeft < quantity) {
+      return;
+    }
+
     const title = document.createElement('label');
     const price = document.createElement('em');
     const input = document.createElement('input');
@@ -113,6 +124,7 @@ function placeOrder(token) {
 
   const url = `${APIGateway}/orders`;
 
+  setDisabled('button', true)
   fetch(url, {
     method: 'POST',
     headers: {
@@ -121,31 +133,35 @@ function placeOrder(token) {
     body: JSON.stringify(orderBody),
   })
     .then((response) => responseHandler(response, url))
-    .then(({ target, message, orderID }) => {
+    .then(({ message, target, orderID }) => {
       if (orderID) {
         window.location.href = `/confirm.html?order=${orderID}`
       } else {
-        const formErrors = document.getElementById('form-errors');
-        formErrors.innerHTML = message;
-        // TODO highlight target.
+        formError(message, target);
       }
+    })
+    .finally(() => {
+      setDisabled('button', false);
     });
 }
 
 function loadShop() {
   // Fetch the information for the product selection.
+  setDisabled('button', true);
   Promise.all([
     `${APIGateway}/products/${productID}`,
     `${APIGateway}/coupons`,
   ].map((url) => fetch(url)
     .then((response) => responseHandler(response, url))
-    .catch((err) => console.log(err)))).then(buildProductGrid);
+    .catch((err) => console.log(err))))
+         .then(buildProductGrid)
+         .finally(() => { setDisabled('button', false); });
 
   const form = document.getElementById('shop-form');
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    placeOrder()
+    placeOrder();
   });
 }
 

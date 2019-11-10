@@ -19,7 +19,7 @@ type productResponse struct {
 // Provides a leaner structure for stripe.SKU information.
 type SKU struct {
 	ID       string `json:"id"`
-	Quantity int64  `json:"quanitity"`
+	Quantity int64  `json:"quantity"`
 	Price    int64  `json:"price"`
 	Image    string `json:"imageURL"`
 	Flavor   string `json:"flavor"`
