@@ -4,18 +4,20 @@ include('_header.php');
 ?>
 <section>
   <img src="images/with-fish.jpg" alt="Cosmo with Fish">
+  <br>
+  <strong>Captain Cosmo Knoebber on the mighty fishing vessel <em>Preamble</em>.</strong>
+  <hr>
   <p>
-    Cosmo catches tuna one at time on his fishing vessal <em>Preamble</em>.
+    Caught hook and line, one at a time. Frozen at sea, smoked on land, for the highest quality possible.
   </p>
   <p>
-    He enlists Daniel the Cat and
-    other deck hands to keep the operation running in ship shape.
+    Daniel the Cat and his deck hands keep everything running in ship shape.
   </p>
   <p>
-    The fish are blast frozen and then
-    delivered to <a target="_blank" href="https://www.chucksseafood.com/">Chuck's Seafood</a>, a micro cannery
-    in Oregon.
+    The fish are delivered and canned at <a target="_blank" href="https://www.chucksseafood.com/">Chuck's Seafood</a>,
+    a micro cannery in Oregon.
   </p>
+  <p>No joints were smoked in the harming of these fish.</p>
   <div id="contact">
     <strong>
       Contact Cosmo
@@ -28,3 +30,9 @@ include('_header.php');
   </footer>
 </section>
 <?php include('_footer.php') ?>
+
+<!-- 
+Caught Hook and line one at a time. By Captian Cosmo Knoebber and his Crew on the Mighty Fishing Vessal Preamble. 
+Frozen at sea, smoked one land, for the highest quality possible. 
+No joints were smoked in the harming of these fish.
+-->

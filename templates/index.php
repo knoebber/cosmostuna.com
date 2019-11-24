@@ -3,7 +3,7 @@ $selectedLink = '';
 include('_header.php');
 ?>
 <div id="greeting">
-  <h1>Hand Lined Blast Frozen Canned Tuna</h1>
+  <h1>Hand Lined Smoked Tuna</h1>
   <form action="/shop.html">
     <button>Shop</button>
   </form>

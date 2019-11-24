@@ -3,13 +3,18 @@ function buildLinks() {
   global $selectedLink;
 
   $links = array(
-    '' => 'Home',
-    'shop.html' => 'Buy Now',
-    'gallery.html' => 'Gallery',
-    'about.html' => 'About',
+    '' => 'HOME',
+    'shop.html' => 'BUY NOW',
+    'gallery.html' => 'GALLERY',
+    'about.html' => 'ABOUT',
   );
 
+  $i = 0;
   foreach ($links as $path => $name) {
+    if ($i++ === 2){
+      echo '<img src="images/alpha-small-logo.png" alt="Logo">';
+    }
+
     if ($selectedLink === $path){
       echo "<a href=\"/$path\" id=\"link-selected\">$name</a>";
     } else {
@@ -31,6 +36,7 @@ function buildLinks() {
     <!-- Include Stripe script on all pages for fraud protection. -->
     <!-- https://stripe.com/docs/web/setup -->
     <script type="text/javascript" src="https://js.stripe.com/v3/" async></script>
+    <link href="https://fonts.googleapis.com/css?family=Merriweather&display=swap" rel="stylesheet"> 
     <?php if (isset($jsHandler)) :?>
       <!-- Shared JavaScript is declared here. -->
       <script type="text/javascript">

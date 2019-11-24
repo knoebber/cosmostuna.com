@@ -5,7 +5,7 @@ include('_header.php');
 ?>
 <section>
   <noscript><h4 style="color:red">Enable scripts to use the shop</h4></noscript>
-  <p>Please review your order.</p>
+  <div id="confirm-action"></div>
   <hr>
   <div id="confirm-order">
     <em>loading order...</em>
