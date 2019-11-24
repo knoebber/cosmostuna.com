@@ -89,7 +89,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		return
 	}
 
-	if err = sendEmail(o.Email, subject, body, o.Shipping.TrackingNumber); err != nil {
+	if err = sendEmail(o.Email, o.ID, subject, body, o.Shipping.TrackingNumber); err != nil {
 		responseBody.Message = err.Error()
 	} else {
 		responseBody.Message = fmt.Sprintf("processed %s, order status is %s", event.Type, o.Status)
@@ -99,7 +99,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 	return
 }
 
-func sendEmail(address string, subject, body, tracking string) error {
+func sendEmail(address, orderID, subject, body, tracking string) error {
 	// Create a new session in the us-west-2 region.
 	// Replace us-west-2 with the AWS Region you're using for Amazon SES.
 	sess, err := session.NewSession(&aws.Config{Region: aws.String(util.AWSRegion)})
@@ -110,16 +110,17 @@ func sendEmail(address string, subject, body, tracking string) error {
 	// Create a SES session.
 	svc := ses.New(sess)
 
-	htmlBody := fmt.Sprintf(`<h3>cosmostuna.com</h3><p>%s</p>`, body)
+	htmlBody := fmt.Sprintf(
+		`<h3>cosmostuna.com</h3>
+<p>%s</p>
+<a href="cosmostuna.com/confirm.html?order=%s">Review your order here.</a>`,
+		body, orderID)
 	if tracking != "" {
-		htmlBody = fmt.Sprintf(`
-%s
-<a 
-   href="https://tools.usps.com/go/TrackConfirmAction_input?strOrigTrackNum=%s" 
-   target="_blank"
->
-USPS Tracking Number %s
-</a>`, htmlBody, tracking, tracking)
+		htmlBody += fmt.Sprintf(`
+<p>Tracking: 
+  <a href="https://tools.usps.com/go/TrackConfirmAction?tLabels=%s" target="_blank">%s</a>
+  (USPS)
+</p>`, tracking, tracking)
 
 		// For plain text emails.
 		body += "\n USPS tracking number: " + tracking

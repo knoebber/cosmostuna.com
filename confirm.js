@@ -34,6 +34,14 @@ function loadConfirm() {
   const formErrors = document.getElementById('form-errors');
   const orderID = new URLSearchParams(window.location.search).get('order');
 
+  const confirmAction = document.getElementById('confirm-action');
+  const payButton = document.querySelector('#submit-row button');
+  const cardForm = document.getElementById('card-element');
+  const removePayment = ()=> {
+    payButton.remove();
+    cardForm.remove();
+  };
+
   // Load the order.
   fetch(`${APIGateway}/orders/${orderID}`)
     .then((response) => {
@@ -49,6 +57,7 @@ function loadConfirm() {
       status,
       shipping: {
         name,
+        tracking_number: tracking,
         address: {
           city,
           country,
@@ -58,6 +67,37 @@ function loadConfirm() {
         },
       },
     }) => {
+      let paymentInfo;
+      let trackingLink;
+      const confirmP = document.createElement('p');
+      if (status === 'created') {
+        confirmP.textContent = 'Please review your order.';
+        paymentInfo = 'Amount Due';
+      } else if (status === 'paid') {
+        confirmP.textContent = 'Your order is paid and pending shipping.';
+        removePayment();
+        paymentInfo = 'Amount Paid';
+      } else if (status === 'fulfilled') {
+        confirmP.textContent = 'Your order has been shipped.';
+        if (tracking) {
+          trackingLink = document.createElement('a');
+          trackingLink.setAttribute('href', `https://tools.usps.com/go/TrackConfirmAction?tLabels=${tracking}`);
+          trackingLink.setAttribute('target', '_blank');
+          trackingLink.setAttribute('style', 'color:black;');
+          trackingLink.textContent = `${tracking} (USPS)`;
+        }
+        paymentInfo = 'Amount Paid';
+        removePayment();
+      } else if(status === 'cancelled') {
+        paymentInfo = 'Amount Refunded';
+        confirmP.textContent = 'Your order is canceled.';
+        removePayment();
+      }
+      confirmAction.appendChild(confirmP);
+      if (trackingLink) {
+        confirmAction.appendChild(trackingLink);
+      }
+        
       const confirmOrder = document.getElementById('confirm-order');
       confirmOrder.innerHTML = '';
 
@@ -83,7 +123,7 @@ function loadConfirm() {
           name: 'Description',
           value: `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`},
         {
-          name: 'Amount Due',
+          name: paymentInfo,
           value: formatCentPrice(amount),
         },
       ].forEach(({ name, value }) => {
@@ -100,17 +140,11 @@ function loadConfirm() {
         confirmOrder.append(infoRow);
       });
 
-      if (status !== 'created') {
-        // TODO type switch on status, include link in email.
-        formError('This order is already paid.');
-        document.getElementsByTagName('button')[0].remove()
-        return;
-      }
     })
     .catch((err) => {
       console.log(err)
       formError('Unable to retrieve order');
-      document.getElementsByTagName('button')[0].remove();
+      removePayment();
     });
 
   // Initialize Stripe.
