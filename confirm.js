@@ -69,10 +69,22 @@ function loadConfirm() {
     }) => {
       let paymentInfo;
       let trackingLink;
+      let orderItems = [];
+      let total = 0;
       const confirmP = document.createElement('p');
       if (status === 'created') {
         confirmP.textContent = 'Please review your order.';
         paymentInfo = 'Amount Due';
+        items.forEach(({ description, amount, type }) => {
+          total += amount;
+          if (type === 'tax') return;
+          if (type === 'discount') {
+            orderItems.push({ name: 'Bulk Discount', value: formatCentPrice(amount) });
+          } else {
+            orderItems.push({ name: description, value: formatCentPrice(amount) });
+          }
+        });
+        orderItems.push({ name: 'Total', value: formatCentPrice(total) });
       } else if (status === 'paid') {
         confirmP.textContent = 'Your order is paid and pending shipping.';
         removePayment();
@@ -101,7 +113,7 @@ function loadConfirm() {
       const confirmOrder = document.getElementById('confirm-order');
       confirmOrder.innerHTML = '';
 
-      const { description, quantity } = items[0];
+      const { quantity } = items[0];
       [
         {
           name: 'Name',
@@ -121,11 +133,9 @@ function loadConfirm() {
         },
         {
           name: 'Description',
-          value: `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`},
-        {
-          name: paymentInfo,
-          value: formatCentPrice(amount),
+          value: `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`
         },
+          ...orderItems
       ].forEach(({ name, value }) => {
         const infoRow = document.createElement('div');
         infoRow.classList.add('info-row', 'fade-new-element');
@@ -139,7 +149,6 @@ function loadConfirm() {
         infoRow.append(title, text);
         confirmOrder.append(infoRow);
       });
-
     })
     .catch((err) => {
       console.log(err)
