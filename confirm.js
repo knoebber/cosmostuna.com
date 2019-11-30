@@ -75,13 +75,22 @@ function loadConfirm() {
       if (status === 'created') {
         confirmP.textContent = 'Please review your order.';
         paymentInfo = 'Amount Due';
-        items.forEach(({ description, amount, type }) => {
+        items.forEach(({ 
+          description, 
+          amount, 
+          type, 
+          quantity, 
+        }) => {
           total += amount;
-          if (type === 'tax') return;
-          if (type === 'discount') {
+          if (type === 'sku') {
+            orderItems.push({ 
+              name: `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`,
+              value: formatCentPrice(amount),
+            });
+          } else if (type === 'discount') {
             orderItems.push({ name: 'Bulk Discount', value: formatCentPrice(amount) });
-          } else {
-            orderItems.push({ name: description, value: formatCentPrice(amount) });
+          } else if (type === 'shipping') {
+            orderItems.push({ name: 'Shipping', value: formatCentPrice(amount) });
           }
         });
         orderItems.push({ name: 'Total', value: formatCentPrice(total) });
@@ -109,11 +118,9 @@ function loadConfirm() {
       if (trackingLink) {
         confirmAction.appendChild(trackingLink);
       }
-        
       const confirmOrder = document.getElementById('confirm-order');
       confirmOrder.innerHTML = '';
 
-      const { quantity } = items[0];
       [
         {
           name: 'Name',
@@ -131,11 +138,7 @@ function loadConfirm() {
           name: 'Email',
           value: email,
         },
-        {
-          name: 'Description',
-          value: `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`
-        },
-          ...orderItems
+        ...orderItems
       ].forEach(({ name, value }) => {
         const infoRow = document.createElement('div');
         infoRow.classList.add('info-row', 'fade-new-element');
