@@ -19,7 +19,7 @@ const (
 	orderSucceeded = "order.payment_succeeded"
 	orderUpdated   = "order.updated"
 
-	sender  = "comptcheshop@gmail.com"
+	sender  = "mail@cosmostuna.com"
 	charSet = "UTF-8"
 )
 
@@ -90,6 +90,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 	}
 
 	if err = sendEmail(o.Email, o.ID, subject, body, o.Shipping.TrackingNumber); err != nil {
+		// Don't throw 500's on email errors.
 		responseBody.Message = err.Error()
 	} else {
 		responseBody.Message = fmt.Sprintf("processed %s, order status is %s", event.Type, o.Status)
@@ -152,6 +153,7 @@ func sendEmail(address, orderID, subject, body, tracking string) error {
 	if _, err := svc.SendEmail(input); err != nil {
 		return fmt.Errorf("failed to send email to %#v, %v", address, err)
 	}
+	fmt.Printf("succeeded to send email from %s to %s\n", sender, address)
 
 	return nil
 }
