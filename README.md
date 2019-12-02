@@ -14,4 +14,5 @@ Built with
   * Route53
   * S3
   * Lambda
-  * API Gateway 
+  * API Gateway
+  * SES
