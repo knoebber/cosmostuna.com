@@ -16,9 +16,6 @@ import (
 )
 
 const (
-	orderSucceeded = "order.payment_succeeded"
-	orderUpdated   = "order.updated"
-
 	sender  = "mail@cosmostuna.com"
 	charSet = "UTF-8"
 )
@@ -27,15 +24,10 @@ type eventResponse struct {
 	Message string `json: "message"`
 }
 
-func buildEvent(requestBody []byte, signature string) (*stripe.Event, error) {
-	hookSecret, err := util.ReadStringKey(util.TestHookSecretName)
-	if err != nil {
-		return nil, errors.Errorf("reading hook secret, %v", err)
-	}
-
+func buildEvent(requestBody []byte, signature, secret string) (*stripe.Event, error) {
 	// Pass the request body and Stripe-Signature header to ConstructEvent, along
 	// with the webhook signing key.
-	event, err := webhook.ConstructEvent(requestBody, signature, hookSecret)
+	event, err := webhook.ConstructEvent(requestBody, signature, secret)
 
 	if err != nil {
 		return nil, errors.Errorf("constructing event, %v", err)
@@ -51,7 +43,14 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		o            stripe.Order
 		subject      string
 		body         string
+		secret       string
 	)
+
+	secret, err = util.GetHookSecret(request.RequestContext.Stage)
+	if err != nil {
+		response.StatusCode = 500
+		return
+	}
 
 	signature, ok := request.Headers["Stripe-Signature"]
 	if !ok {
@@ -60,7 +59,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		return
 	}
 
-	event, err = buildEvent([]byte(request.Body), signature)
+	event, err = buildEvent([]byte(request.Body), signature, secret)
 	if err != nil {
 		response.StatusCode = 400
 		return

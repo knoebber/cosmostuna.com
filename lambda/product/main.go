@@ -27,12 +27,8 @@ type SKU struct {
 
 // HandleRequest processes a lambda request.
 func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGatewayProxyResponse, err error) {
-	var (
-		stripeKey string
-		p         *stripe.Product
-	)
+	var p *stripe.Product
 
-	// TODO only cosmostuna.com
 	response.Headers = map[string]string{"Access-Control-Allow-Origin": "*"}
 
 	productID, ok := request.PathParameters["productID"]
@@ -42,13 +38,10 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		return
 	}
 
-	// TODO Create stage param to choose which key to use.
-	stripeKey, err = util.ReadStringKey(util.TestModeKeyName)
-	if err != nil {
+	if err = util.SetStripeKey(request.RequestContext.Stage); err != nil {
 		response.StatusCode = 500
 		return
 	}
-	stripe.Key = stripeKey
 
 	p, err = product.Get(productID, nil)
 	if err != nil {

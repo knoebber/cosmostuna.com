@@ -1,28 +1,26 @@
 package util
 
 import (
-	"bytes"
 	"encoding/json"
+	"fmt"
+	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/pkg/errors"
+	"github.com/stripe/stripe-go"
 )
 
 const (
-	// TestModeKeyName is the key in backendBucket that holds the Stripe test mode secret key.
-	TestModeKeyName = "/test-secret-stripe-api-key"
-
-	// TestHookSecretName is the key in backendBucket that verifies hook requests from Stripe.
-	TestHookSecretName = "/test-hook-secret"
-
 	// AWSRegion is where AWS resources are created.
 	AWSRegion = "us-west-2"
-)
 
-const backendBucket = "cosmostuna-backend"
+	// Keys are held in environment variables in Lambda.
+	prodStripeKey = "prod_stripe_key"
+	testStripeKey = "test_stripe_key"
+
+	prodHookSecret = "prod_webhook_secret"
+	testHookSecret = "test_webhook_secret"
+)
 
 // BulkOffer maps a quantity of items to a discount.
 // If a customer buys that quantity, the discount will be applied.
@@ -51,33 +49,36 @@ var BulkOffers = [4]BulkOffer{
 	},
 }
 
-// ReadStringKey reads and returns the contents of key in the backend bucket.
-func ReadStringKey(key string) (string, error) {
-	// Create a S3 client
-	session := session.Must(session.NewSession())
-	svc := s3.New(session)
+func getEnvValue(key string) (value string, err error) {
+	if value = os.Getenv(key); value == "" {
+		err = fmt.Errorf("$%s is not set or empty", key)
+	}
+	return
+}
 
-	getInput := s3.GetObjectInput{
-		Bucket: aws.String(backendBucket),
+// SetStripeKey sets the stripe API key.
+func SetStripeKey(stageName string) error {
+	var (
+		stripeKey string
+		err       error
+	)
+
+	if stageName == "prod" {
+		stripeKey, err = getEnvValue(prodStripeKey)
+	} else {
+		stripeKey, err = getEnvValue(testStripeKey)
 	}
 
-	// Get the Stripe secret api key
-	getInput.Key = aws.String(key)
+	stripe.Key = stripeKey
+	return err
+}
 
-	output, err := svc.GetObject(&getInput)
-	if err != nil {
-		return "", errors.Wrap(err, "failed to get stripe api secret S3 object")
+// GetHookSecret returns the stripe webhook secret.
+func GetHookSecret(stageName string) (string, error) {
+	if stageName == "prod" {
+		return getEnvValue(prodHookSecret)
 	}
-
-	buf := new(bytes.Buffer)
-	if _, err := buf.ReadFrom(output.Body); err != nil {
-		return "", errors.Wrap(err, "failed to read body from S3 object body")
-	}
-
-	value := buf.String()
-
-	// Remove the newline. TODO why is there a newline.
-	return value[:len(value)-1], nil
+	return getEnvValue(testHookSecret)
 }
 
 // SetResponseBody attempts to marshal body into the Lambda response body.

@@ -12,10 +12,7 @@ import (
 
 // HandleRequest processes a lambda request.
 func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGatewayProxyResponse, err error) {
-	var (
-		stripeKey string
-		o         *stripe.Order
-	)
+	var o *stripe.Order
 
 	// TODO only cosmostuna.com
 	response.Headers = map[string]string{"Access-Control-Allow-Origin": "*"}
@@ -26,14 +23,11 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		err = errors.New("path parameter orderID is required")
 		return
 	}
-
-	// TODO Create stage param to choose which key to use.
-	stripeKey, err = util.ReadStringKey(util.TestModeKeyName)
-	if err != nil {
+	if err = util.SetStripeKey(request.RequestContext.Stage); err != nil {
 		response.StatusCode = 500
 		return
 	}
-	stripe.Key = stripeKey
+
 	o, err = order.Get(orderID, nil)
 	if err != nil {
 		response.StatusCode = 500
