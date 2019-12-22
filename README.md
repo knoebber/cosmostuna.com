@@ -15,4 +15,5 @@ Built with
   * S3
   * Lambda
   * API Gateway
-  * SES
+  * Simple Email Service
+  * Simple Notification Service
