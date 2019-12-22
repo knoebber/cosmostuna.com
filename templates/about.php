@@ -17,7 +17,6 @@ include('_header.php');
     The fish are delivered and canned at <a target="_blank" href="https://www.chucksseafood.com/">Chuck's Seafood</a>,
     a micro cannery in Oregon.
   </p>
-  <p>No joints were smoked in the harming of these fish.</p>
   <div id="contact">
     <strong>
       Contact Cosmo

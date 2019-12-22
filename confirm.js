@@ -1,5 +1,3 @@
-const showOrderItems = false;
-
 function submitPayment({ id: token }, orderID) {
   setDisabled('button', true);
 
@@ -72,6 +70,7 @@ function loadConfirm() {
       let trackingLink;
       let orderItems = [];
       let total = 0;
+      let itemName;
       const confirmP = document.createElement('p');
       if (status === 'created') {
         confirmP.textContent = 'Please review your order.';
@@ -84,19 +83,14 @@ function loadConfirm() {
         }) => {
           total += amount;
           if (type === 'sku') {
-            orderItems.push({
-              name: `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`,
-              value: formatCentPrice(amount),
-            });
-          } else if (showOrderItems && type === 'discount') {
-            orderItems.push({ name: 'Bulk Discount', value: formatCentPrice(amount) });
-          } else if (showOrderItems && type === 'shipping') {
-            orderItems.push({ name: 'Shipping', value: formatCentPrice(amount) });
+            itemName = `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`;
           }
         });
-        if (showOrderItems) {
-          orderItems.push({ name: 'Total', value: formatCentPrice(total) });
-        }
+        const formattedTotal = formatCentPrice(total);
+        orderItems.push({ name: itemName, value: formattedTotal });
+        // Remove the display:hidden.
+        document.getElementById('disclaimer-row').removeAttribute('style');
+        document.getElementById('total-amount').innerHTML = formattedTotal;
       } else if (status === 'paid') {
         confirmP.textContent = 'Your order is paid and pending shipping.';
         removePayment();
@@ -112,7 +106,7 @@ function loadConfirm() {
         }
         paymentInfo = 'Amount Paid';
         removePayment();
-      } else if(status === 'cancelled') {
+      } else if(status === 'canceled') {
         paymentInfo = 'Amount Refunded';
         confirmP.textContent = 'Your order is canceled.';
         removePayment();

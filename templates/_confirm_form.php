@@ -10,6 +10,10 @@
     <div class="spinner"></div>
   </div>
   <form id="confirm-form">
+    <hr>
+    <div id="disclaimer-row" style="display:none;">
+      <p>By paying <span id="total-amount"></span> you agree to our <a target="_blank" href="/terms.html">terms.</a></p>
+    </div>
     <div id="card-element"><!-- Stripe iframe --></div>
     <div id="submit-row" class="info-row">
       <button type="submit">Place Order</button>

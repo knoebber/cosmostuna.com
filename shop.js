@@ -1,4 +1,9 @@
-const productID = 'prod_G3nbhaoJkINZ5v';
+let productID;
+if (prod) {
+  productID = 'prod_GPOduxF2GsV3Jd';
+} else {
+  productID = 'prod_G3nbhaoJkINZ5v';
+}
 
 function fetchProduct() {
   return fetch(`${apiGateway}/products/${productID}`)
