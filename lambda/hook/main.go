@@ -44,6 +44,8 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		subject      string
 		body         string
 		secret       string
+		quantityStr  string
+		quantity     int64
 	)
 
 	secret, err = util.GetHookSecret(request.RequestContext.Stage)
@@ -72,18 +74,30 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		return
 	}
 
+	for _, item := range o.Items {
+		if item.Type == stripe.OrderItemTypeSKU {
+			quantity = item.Quantity
+			break
+		}
+	}
+	if quantity > 1 {
+		quantityStr = fmt.Sprintf("%d cans of tuna", quantity)
+	} else {
+		quantityStr = "tuna can"
+	}
+
 	switch stripe.OrderStatus(o.Status) {
 	case stripe.OrderStatusPaid:
-		subject = "Your cosmostuna.com order has proccessed"
-		body = "Thank you! We’ll send a confirmation when your tuna ships."
+		subject = "Your Cosmos's Tuna order has proccessed"
+		body = fmt.Sprintf("Thank you for your order! We’ll send a confirmation when your %s ships.", quantityStr)
 	case stripe.OrderStatusFulfilled:
-		subject = "Your cosmostuna.com order has shipped"
-		body = "Your tuna will arrive soon."
+		subject = "Your Cosmo's Tuna order has shipped"
+		body = fmt.Sprintf("Your %s will arrive soon.", quantityStr)
 	case stripe.OrderStatusCanceled:
-		subject = "Your cosmostuna.com order has been canceled"
+		subject = "Your Cosmo's Tuna order has been canceled"
 		body = "You will be refunded."
 	default:
-		responseBody.Message = fmt.Sprintf("order status %#v", o.Status)
+		responseBody.Message = fmt.Sprintf("unknown order status %#v", o.Status)
 		util.SetResponseBody(&response, &responseBody)
 		return
 	}
@@ -110,10 +124,10 @@ func sendEmail(address, orderID, subject, body, tracking string) error {
 	// Create a SES session.
 	svc := ses.New(sess)
 
-	htmlBody := fmt.Sprintf(
-		`<h3>cosmostuna.com</h3>
+	htmlBody := fmt.Sprintf(`
 <p>%s</p>
-<a href="cosmostuna.com/confirm.html?order=%s">Review your order here.</a>`,
+<a href="https://www.cosmostuna.com/confirm.html?order=%s">Review your order here.</a>
+`,
 		body, orderID)
 	if tracking != "" {
 		htmlBody += fmt.Sprintf(`
@@ -125,6 +139,8 @@ func sendEmail(address, orderID, subject, body, tracking string) error {
 		// For plain text emails.
 		body += "\n USPS tracking number: " + tracking
 	}
+	htmlBody += `
+<p>Please <a href="https://www.cosmostuna.com/about.html">contact us</a> if you have any questions.</p>`
 
 	// Assemble the email.
 	input := &ses.SendEmailInput{
