@@ -1,4 +1,8 @@
 <?php
+$apiGateway = 'https://p4b43mv7al.execute-api.us-west-2.amazonaws.com';
+$stripeTestPublicKey = 'pk_test_qUdrpKjmC5gZ7jcuuHeRb8Au006WnfLwAt';
+$stripeProdPublicKey = 'pk_live_yQTbrZw5CPfFetLlebxnTll7008omolXmg';
+
 function buildLinks() {
   global $selectedLink;
 
@@ -40,7 +44,16 @@ function buildLinks() {
     <?php if (isset($jsHandler)) :?>
       <!-- Shared JavaScript is declared here. -->
       <script type="text/javascript">
-       const APIGateway = 'https://p4b43mv7al.execute-api.us-west-2.amazonaws.com/dev';
+       <?php if ($prod === true) :?>
+       const prod = true;
+       const apiGateway = '<?= $apiGateway . '/prod' ?>';
+       const stripePublicKey = '<?= $stripeProdPublicKey ?>';
+       <?php else :?>
+       const prod = false;
+       const apiGateway = '<?= $apiGateway . '/dev' ?>';
+       const stripePublicKey = '<?= $stripeTestPublicKey ?>';
+       <?php endif; ?>
+
        function responseHandler(response, url) {
          if (!response.ok) {
            throw `failed request to ${url}`;

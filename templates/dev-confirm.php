@@ -1,9 +1,8 @@
 <?php
 $selectedLink = 'shop.html';
-$jsHandler = 'shop.js';
+$jsHandler = 'confirm.js';
 $prod = false;
 include('_header.php');
-include('_shop_form.php');
+include('_confirm_form.php');
 include('_footer.php');
 ?>
-

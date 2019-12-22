@@ -1,7 +1,7 @@
 const productID = 'prod_G3nbhaoJkINZ5v';
 
 function fetchProduct() {
-  return fetch(`${APIGateway}/products/${productID}`)
+  return fetch(`${apiGateway}/products/${productID}`)
     .then((response) => {
       if (!response.ok) {
         throw 'failed to get product';
@@ -12,7 +12,7 @@ function fetchProduct() {
 }
 
 function fetchCoupons() {
-  return fetch(`${APIGateway}/coupons`)
+  return fetch(`${apiGateway}/coupons`)
     .then((response) => {
       if (!response.ok) {
         throw 'failed to get coupons';
@@ -22,11 +22,20 @@ function fetchCoupons() {
     .catch((err) => console.log(err));
 }
 
-function buildProductGrid([product, { offers, coupons }]) {
-  const {
-    name,
-    SKUList,
-  } = product;
+// The arguments are destructuring the list of promise.all() results.
+function buildProductGrid([productData, couponData]) {
+  const productGrid = document.getElementById('product-grid');
+
+  if (!productData || !couponData) {
+    productGrid.innerHTML = 'Failed to fetch products.';
+    document.getElementById('shop-form').innerHTML = '';
+    return;
+  } else {
+    productGrid.innerHTML = '';
+  }
+
+  const { name, SKUList } = productData;
+  const { offers, coupons } = couponData;
 
   // Tuna is redudant for now.
   const productName = name.replace(/Tuna /, '')
@@ -39,15 +48,12 @@ function buildProductGrid([product, { offers, coupons }]) {
     quantity: productsLeft,
   } = SKUList[0];
 
-  const productGrid = document.getElementById('product-grid');
   productGrid.setAttribute('data-sku-id', SKUID)
   if (productsLeft < 1){
     productGrid.innerHTML = 'Out of stock.';
     document.getElementById('order-grid').remove()
     document.getElementById('submit-row').remove()
-    return
-  } else {
-    productGrid.innerHTML = '';
+    return;
   }
 
   offers.forEach(({ quantity, couponID }) => {
@@ -122,7 +128,7 @@ function placeOrder(token) {
     }],
   };
 
-  const url = `${APIGateway}/orders`;
+  const url = `${apiGateway}/orders`;
 
   setDisabled('button', true)
   fetch(url, {
@@ -135,7 +141,7 @@ function placeOrder(token) {
     .then((response) => responseHandler(response, url))
     .then(({ message, target, orderID }) => {
       if (orderID) {
-        window.location.href = `/confirm.html?order=${orderID}`
+        window.location.href = prod? `/confirm.html?order=${orderID}` : `/dev-confirm.html?order=${orderID}`;
       } else {
         formError(message, target);
       }
@@ -149,8 +155,8 @@ function loadShop() {
   // Fetch the information for the product selection.
   setDisabled('button', true);
   Promise.all([
-    `${APIGateway}/products/${productID}`,
-    `${APIGateway}/coupons`,
+    `${apiGateway}/products/${productID}`,
+    `${apiGateway}/coupons`,
   ].map((url) => fetch(url)
     .then((response) => responseHandler(response, url))
     .catch((err) => console.log(err))))

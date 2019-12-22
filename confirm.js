@@ -1,9 +1,9 @@
-const stripePublicKey = 'pk_test_qUdrpKjmC5gZ7jcuuHeRb8Au006WnfLwAt';
+const showOrderItems = false;
 
 function submitPayment({ id: token }, orderID) {
   setDisabled('button', true);
 
-  fetch(`${APIGateway}/orders`, {
+  fetch(`${apiGateway}/orders`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -34,6 +34,7 @@ function loadConfirm() {
   const formErrors = document.getElementById('form-errors');
   const orderID = new URLSearchParams(window.location.search).get('order');
 
+  const confirmOrder = document.getElementById('confirm-order');
   const confirmAction = document.getElementById('confirm-action');
   const payButton = document.querySelector('#submit-row button');
   const cardForm = document.getElementById('card-element');
@@ -43,7 +44,7 @@ function loadConfirm() {
   };
 
   // Load the order.
-  fetch(`${APIGateway}/orders/${orderID}`)
+  fetch(`${apiGateway}/orders/${orderID}`)
     .then((response) => {
       if (!response.ok) {
         throw 'failed to get order';
@@ -75,25 +76,27 @@ function loadConfirm() {
       if (status === 'created') {
         confirmP.textContent = 'Please review your order.';
         paymentInfo = 'Amount Due';
-        items.forEach(({ 
-          description, 
-          amount, 
-          type, 
-          quantity, 
+        items.forEach(({
+          description,
+          amount,
+          type,
+          quantity,
         }) => {
           total += amount;
           if (type === 'sku') {
-            orderItems.push({ 
+            orderItems.push({
               name: `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`,
               value: formatCentPrice(amount),
             });
-          } else if (type === 'discount') {
+          } else if (showOrderItems && type === 'discount') {
             orderItems.push({ name: 'Bulk Discount', value: formatCentPrice(amount) });
-          } else if (type === 'shipping') {
+          } else if (showOrderItems && type === 'shipping') {
             orderItems.push({ name: 'Shipping', value: formatCentPrice(amount) });
           }
         });
-        orderItems.push({ name: 'Total', value: formatCentPrice(total) });
+        if (showOrderItems) {
+          orderItems.push({ name: 'Total', value: formatCentPrice(total) });
+        }
       } else if (status === 'paid') {
         confirmP.textContent = 'Your order is paid and pending shipping.';
         removePayment();
@@ -118,7 +121,6 @@ function loadConfirm() {
       if (trackingLink) {
         confirmAction.appendChild(trackingLink);
       }
-      const confirmOrder = document.getElementById('confirm-order');
       confirmOrder.innerHTML = '';
 
       [
@@ -155,8 +157,9 @@ function loadConfirm() {
     })
     .catch((err) => {
       console.log(err)
-      formError('Unable to retrieve order');
       removePayment();
+      formError('Unable to retrieve order.');
+      confirmOrder.innerHTML = '';
     });
 
   // Initialize Stripe.
