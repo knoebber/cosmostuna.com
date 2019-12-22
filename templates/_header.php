@@ -36,7 +36,7 @@ function buildLinks() {
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Buy fresh canned tuna. Fish doesn't get better than this!">
+    <meta name="description" content="Buy Cosmo's fresh canned tuna. Fish doesn't get better than this!">
     <link rel="stylesheet" type="text/css" href="style.css" />
     <!-- Include Stripe script on all pages for fraud protection. -->
     <!-- https://stripe.com/docs/web/setup -->
