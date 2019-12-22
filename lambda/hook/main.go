@@ -16,8 +16,10 @@ import (
 )
 
 const (
-	sender  = "mail@cosmostuna.com"
-	charSet = "UTF-8"
+	sender      = "mail@cosmostuna.com"
+	charSet     = "UTF-8"
+	cosmosEmail = "cosmo.knoebber@gmail.com"
+	adminEmail  = "knoebber@gmail.com"
 )
 
 type eventResponse struct {
@@ -46,6 +48,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		secret       string
 		quantityStr  string
 		quantity     int64
+		bcc          bool
 	)
 
 	secret, err = util.GetHookSecret(request.RequestContext.Stage)
@@ -88,6 +91,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 
 	switch stripe.OrderStatus(o.Status) {
 	case stripe.OrderStatusPaid:
+		bcc = true
 		subject = "Your Cosmos's Tuna order has proccessed"
 		body = fmt.Sprintf("Thank you for your order! We’ll send a confirmation when your %s ships.", quantityStr)
 	case stripe.OrderStatusFulfilled:
@@ -102,7 +106,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		return
 	}
 
-	if err = sendEmail(o.Email, o.ID, subject, body, o.Shipping.TrackingNumber); err != nil {
+	if err = sendEmail(o.Email, o.ID, subject, body, o.Shipping.TrackingNumber, bcc); err != nil {
 		// Don't throw 500's on email errors.
 		responseBody.Message = err.Error()
 	} else {
@@ -113,7 +117,9 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 	return
 }
 
-func sendEmail(address, orderID, subject, body, tracking string) error {
+func sendEmail(address, orderID, subject, body, tracking string, bcc bool) error {
+	var destination *ses.Destination
+
 	// Create a new session in the us-west-2 region.
 	// Replace us-west-2 with the AWS Region you're using for Amazon SES.
 	sess, err := session.NewSession(&aws.Config{Region: aws.String(util.AWSRegion)})
@@ -142,11 +148,20 @@ func sendEmail(address, orderID, subject, body, tracking string) error {
 	htmlBody += `
 <p>Please <a href="https://www.cosmostuna.com/about.html">contact us</a> if you have any questions.</p>`
 
+	if bcc {
+		destination = &ses.Destination{
+			ToAddresses:  []*string{aws.String(address)},
+			BccAddresses: []*string{aws.String(cosmosEmail), aws.String(adminEmail)},
+		}
+	} else {
+		destination = &ses.Destination{
+			ToAddresses: []*string{aws.String(address)},
+		}
+
+	}
 	// Assemble the email.
 	input := &ses.SendEmailInput{
-		Destination: &ses.Destination{
-			ToAddresses: []*string{aws.String(address)},
-		},
+		Destination: destination,
 		Message: &ses.Message{
 			Body: &ses.Body{
 				Html: &ses.Content{
