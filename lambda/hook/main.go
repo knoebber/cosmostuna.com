@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
+	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/knoebber/comptcheshop/lambda/util"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go"
@@ -16,11 +18,12 @@ import (
 )
 
 const (
-	sender      = "mail@cosmostuna.com"
-	charSet     = "UTF-8"
-	cosmosEmail = "cosmo.knoebber@gmail.com"
-	adminEmail  = "knoebber@gmail.com"
+	sender     = "mail@cosmostuna.com"
+	charSet    = "UTF-8"
+	snsSubject = "Cosmo's Tuna: New Paid Order"
 )
+
+var sess *session.Session
 
 type eventResponse struct {
 	Message string `json: "message"`
@@ -37,6 +40,49 @@ func buildEvent(requestBody []byte, signature, secret string) (*stripe.Event, er
 	return &event, nil
 }
 
+// Publishes a message to a SNS (Simple Notification Service) topic.
+// Used for notifying us when a new order is paid.
+func publishMessage(stage, orderID string) {
+	var (
+		stripeLink  string
+		confirmLink string
+		subject     string
+	)
+	snsTopicArn := os.Getenv("sns_topic_arn")
+	if snsTopicArn == "" {
+		fmt.Println("Must set sns_topic_arn env value to publish messages")
+		return
+	}
+
+	if stage == "prod" {
+		stripeLink = fmt.Sprintf("https://dashboard.stripe.com/orders/%s", orderID)
+		confirmLink = fmt.Sprintf("https://cosmostuna.com/confirm.html?order=%s", orderID)
+		subject = snsSubject
+	} else {
+		stripeLink = fmt.Sprintf("https://dashboard.stripe.com/test/orders/%s", orderID)
+		confirmLink = fmt.Sprintf("https://cosmostuna.com/dev-confirm.html?order=%s", orderID)
+		subject = "[TEST MODE] " + snsSubject
+	}
+
+	msg := fmt.Sprintf("Stripe: %s\nOrder Confirm: %s", stripeLink, confirmLink)
+
+	client := sns.New(sess)
+
+	input := &sns.PublishInput{
+		TopicArn: aws.String(snsTopicArn),
+		Subject:  aws.String(subject),
+		Message:  aws.String(msg),
+	}
+
+	// The second parameter is sns.PublishOutput
+	req, _ := client.PublishRequest(input)
+	if err := req.Send(); err != nil {
+		fmt.Printf("failed to publish SNS message: %v\n", err)
+		return
+	}
+	fmt.Println("Published to SNS topic")
+}
+
 // HandleRequest processes a lambda request.
 func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGatewayProxyResponse, err error) {
 	var (
@@ -48,8 +94,13 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		secret       string
 		quantityStr  string
 		quantity     int64
-		bcc          bool
 	)
+
+	sess, err = session.NewSession(&aws.Config{Region: aws.String(util.AWSRegion)})
+	if err != nil {
+		response.StatusCode = 500
+		return
+	}
 
 	secret, err = util.GetHookSecret(request.RequestContext.Stage)
 	if err != nil {
@@ -91,8 +142,8 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 
 	switch stripe.OrderStatus(o.Status) {
 	case stripe.OrderStatusPaid:
-		bcc = true
-		subject = "Your Cosmos's Tuna order has proccessed"
+		publishMessage(request.RequestContext.Stage, o.ID)
+		subject = "Your Cosmos's Tuna order has processed"
 		body = fmt.Sprintf("Thank you for your order! We’ll send a confirmation when your %s ships.", quantityStr)
 	case stripe.OrderStatusFulfilled:
 		subject = "Your Cosmo's Tuna order has shipped"
@@ -106,26 +157,18 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		return
 	}
 
-	if err = sendEmail(o.Email, o.ID, subject, body, o.Shipping.TrackingNumber, bcc); err != nil {
+	if err = sendEmail(o.Email, o.ID, subject, body, o.Shipping.TrackingNumber); err != nil {
 		// Don't throw 500's on email errors.
-		responseBody.Message = err.Error()
+		responseBody.Message = fmt.Sprintf("failed to email %s: %v", o.Email, err)
 	} else {
-		responseBody.Message = fmt.Sprintf("processed %s, order status is %s", event.Type, o.Status)
+		responseBody.Message = fmt.Sprintf("emailed %s, order status is %s", o.Email, o.Status)
 	}
 
 	util.SetResponseBody(&response, &responseBody)
 	return
 }
 
-func sendEmail(address, orderID, subject, body, tracking string, bcc bool) error {
-	var destination *ses.Destination
-
-	// Create a new session in the us-west-2 region.
-	// Replace us-west-2 with the AWS Region you're using for Amazon SES.
-	sess, err := session.NewSession(&aws.Config{Region: aws.String(util.AWSRegion)})
-	if err != nil {
-		return fmt.Errorf("starting AWS session in %s, %v", util.AWSRegion, err)
-	}
+func sendEmail(address, orderID, subject, body, tracking string) error {
 
 	// Create a SES session.
 	svc := ses.New(sess)
@@ -148,20 +191,11 @@ func sendEmail(address, orderID, subject, body, tracking string, bcc bool) error
 	htmlBody += `
 <p>Please <a href="https://www.cosmostuna.com/about.html">contact us</a> if you have any questions.</p>`
 
-	if bcc {
-		destination = &ses.Destination{
-			ToAddresses:  []*string{aws.String(address)},
-			BccAddresses: []*string{aws.String(cosmosEmail), aws.String(adminEmail)},
-		}
-	} else {
-		destination = &ses.Destination{
-			ToAddresses: []*string{aws.String(address)},
-		}
-
-	}
 	// Assemble the email.
 	input := &ses.SendEmailInput{
-		Destination: destination,
+		Destination: &ses.Destination{
+			ToAddresses: []*string{aws.String(address)},
+		},
 		Message: &ses.Message{
 			Body: &ses.Body{
 				Html: &ses.Content{
