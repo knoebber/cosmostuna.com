@@ -48,6 +48,12 @@ func publishMessage(stage, orderID string) {
 		confirmLink string
 		subject     string
 	)
+
+	// Don't publish test messages for now.
+	if stage != "prod" {
+		return
+	}
+
 	snsTopicArn := os.Getenv("sns_topic_arn")
 	if snsTopicArn == "" {
 		fmt.Println("Must set sns_topic_arn env value to publish messages")
