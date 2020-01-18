@@ -38,6 +38,9 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 	}
 
 	_, err = order.Pay(requestBody.OrderID, params)
+	if err != nil {
+		return
+	}
 
 	response.StatusCode = 200
 
