@@ -70,7 +70,7 @@ function buildProductGrid([productData, couponData]) {
     const price = document.createElement('em');
     const input = document.createElement('input');
 
-    if (quantity == 1) {
+    if (quantity === 1) {
       title.innerHTML = `${quantity} ${productName}`;
       // Set buying one can to the default.
       input.setAttribute('checked', true);

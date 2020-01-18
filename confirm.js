@@ -36,7 +36,7 @@ function loadConfirm() {
   const confirmAction = document.getElementById('confirm-action');
   const payButton = document.querySelector('#submit-row button');
   const cardForm = document.getElementById('card-element');
-  const removePayment = ()=> {
+  const removePayment = () => {
     payButton.remove();
     cardForm.remove();
   };
@@ -72,25 +72,28 @@ function loadConfirm() {
       let total = 0;
       let itemName;
       const confirmP = document.createElement('p');
+      items.forEach(({
+        description,
+        amount,
+        type,
+        quantity,
+      }) => {
+        total += amount;
+        if (type === 'sku') {
+          itemName = `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`;
+        }
+      });
+
+      const formattedTotal = formatCentPrice(total);
+      orderItems.push({ name: itemName, value: formattedTotal });
+      document.getElementById('total-amount').innerHTML = formattedTotal;
+
       if (status === 'created') {
         confirmP.textContent = 'Please review your order.';
         paymentInfo = 'Amount Due';
-        items.forEach(({
-          description,
-          amount,
-          type,
-          quantity,
-        }) => {
-          total += amount;
-          if (type === 'sku') {
-            itemName = `${quantity} ${quantity > 1 ? 'cans': 'can'} tuna`;
-          }
-        });
-        const formattedTotal = formatCentPrice(total);
-        orderItems.push({ name: itemName, value: formattedTotal });
+
         // Remove the display:hidden.
         document.getElementById('disclaimer-row').removeAttribute('style');
-        document.getElementById('total-amount').innerHTML = formattedTotal;
       } else if (status === 'paid') {
         confirmP.textContent = 'Your order is paid and pending shipping.';
         removePayment();
