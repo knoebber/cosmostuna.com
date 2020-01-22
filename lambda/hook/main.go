@@ -149,7 +149,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 	switch stripe.OrderStatus(o.Status) {
 	case stripe.OrderStatusPaid:
 		publishMessage(request.RequestContext.Stage, o.ID)
-		subject = "Your Cosmos's Tuna order has processed"
+		subject = "Your Cosmo's Tuna order has processed"
 		body = fmt.Sprintf("Thank you for your order! We’ll send a confirmation when your %s ships.", quantityStr)
 	case stripe.OrderStatusFulfilled:
 		subject = "Your Cosmo's Tuna order has shipped"
