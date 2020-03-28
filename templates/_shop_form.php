@@ -8,7 +8,7 @@
   <br>
   <noscript><h4 style="color:red">Enable scripts to use the shop</h4></noscript>
   <p>
-    Shipping is included. If you're local, contact Cosmo directly to avoid shipping costs.
+    If you're local, contact Cosmo for a discount.
   </p>
   <hr>
   <div id="product-grid" class="grid-section">
