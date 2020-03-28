@@ -30,14 +30,10 @@ type BulkOffer struct {
 }
 
 // BulkOffers are the current deals that the store offers.
-var BulkOffers = [4]BulkOffer{
+var BulkOffers = [3]BulkOffer{
 	{
 		Quantity: 1,
 		CouponID: nil,
-	},
-	{
-		Quantity: 3,
-		CouponID: aws.String("3_CAN"),
 	},
 	{
 		Quantity: 12,

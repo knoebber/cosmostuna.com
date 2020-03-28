@@ -13,7 +13,7 @@ type CouponResponse struct {
 	Coupons map[string]int64 `json:"coupons"`
 
 	// Offers describe when coupons are automatically applied.
-	Offers [4]util.BulkOffer `json:"offers"`
+	Offers [3]util.BulkOffer `json:"offers"`
 }
 
 // HandleRequest processes a Lambda request.
