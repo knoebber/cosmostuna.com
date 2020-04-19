@@ -1,3 +1,57 @@
+<?php
+$states = array(
+	"Alabama",
+	"Arizona",
+	"Arkansas",
+	"California",
+	"Colorado",
+	"Connecticut",
+	"Delaware",
+	"District of Columbia",
+	"Florida",
+	"Georgia",
+	"Idaho",
+	"Illinois",
+	"Indiana",
+	"Iowa",
+	"Kansas",
+	"Kentucky",
+	"Louisiana",
+	"Maine",
+	"Maryland",
+	"Massachusetts",
+	"Michigan",
+	"Minnesota",
+	"Mississippi",
+	"Missouri",
+	"Montana",
+	"Nebraska",
+	"Nevada",
+	"New Hampshire",
+	"New Jersey",
+	"New Mexico",
+	"New York",
+	"North Carolina",
+	"North Dakota",
+	"Ohio",
+	"Oklahoma",
+	"Oregon",
+	"Pennsylvania",
+	"Rhode Island",
+	"South Carolina",
+	"South Dakota",
+	"Tennessee",
+	"Texas",
+	"Utah",
+	"Vermont",
+	"Virginia",
+	"Washington",
+	"West virginia",
+	"Wisconsin",
+	"Wyoming",
+);
+?>
+
 <section>
   <?php if(!$prod) :?>
     <div style="text-align: center;"><strong>[TEST MODE]</strong></div>
@@ -20,7 +74,15 @@
       <label for="name">Full Name</label><input id="name" type="text" required>
       <label for="address">Address</label><input id="address" type="text" required>
       <label for="city">City</label><input id="city" type="text" required>
-      <label for="state">State</label><input id="state" type="text" required>
+      <label for="state">State</label>
+      <select id="state">
+        <option>Select a state</option>
+        <?php
+        foreach($states as $state) {
+  	  echo "<option value=\"$state\">$state</option>";
+        }
+        ?>
+      </select>
       <label for="zip">Zip</label><input id="zip" type="text" pattern="^[0-9]{5}(-[0-9]{4})?$" required>
       <label for="email">Email</label><input id="email" type="email" required>
     </div>

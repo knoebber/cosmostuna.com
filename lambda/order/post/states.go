@@ -67,7 +67,7 @@ func shippable(stateName *string) bool {
 		return false
 	}
 
-	val := strings.ToLower(*stateName)
+	val := strings.TrimSpace(strings.ToLower(*stateName))
 	for _, s := range states {
 		if val == s.abr || val == s.full {
 			return true

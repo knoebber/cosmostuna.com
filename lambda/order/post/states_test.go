@@ -6,11 +6,12 @@ import (
 )
 
 var (
-	invalid       = "invalid"
-	valid         = "ca"
-	validFull     = "caliForniA"
-	validCaps     = "IA"
-	validFullCaps = "CALIFORNIA"
+	invalid         = "invalid"
+	valid           = "ca"
+	validFull       = "caliForniA"
+	validFullSpaces = " caliForniA "
+	validCaps       = "IA"
+	validFullCaps   = "CALIFORNIA"
 )
 
 func TestShippable(t *testing.T) {
@@ -19,7 +20,7 @@ func TestShippable(t *testing.T) {
 		assert.False(t, shippable(&invalid))
 	})
 
-	truths := []*string{&valid, &validFull, &validCaps, &validFullCaps}
+	truths := []*string{&valid, &validFull, &validCaps, &validFullCaps, &validFullSpaces}
 	t.Run("returns true", func(t *testing.T) {
 		for _, truth := range truths {
 			assert.True(t, shippable(truth))

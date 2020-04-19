@@ -115,10 +115,6 @@ section {
     border-radius: 5px;
 }
 
-select {
-    margin-top: 1rem;
-}
-
 #greeting button {
     padding-left: 1rem;
     padding-right: 1rem;
