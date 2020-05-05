@@ -61,9 +61,15 @@ $states = array(
   </div>
   <br>
   <noscript><h4 style="color:red">Enable scripts to use the shop</h4></noscript>
-  <p>
-    If you're local, contact Cosmo for a discount.
-  </p>
+  <?php if($goneFishing) :?>
+    <div style="text-align: center;">
+      <strong>Cosmo is gone fishing - orders may take longer to fulfill.</strong>
+    </div>
+  <?php else: ?>
+    <p>
+      If you're local, contact Cosmo for a discount.
+    </p>
+  <?php endif; ?>
   <hr>
   <div id="product-grid" class="grid-section">
     <em>loading products...</em>
