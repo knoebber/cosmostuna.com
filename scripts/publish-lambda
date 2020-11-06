@@ -1,72 +1,46 @@
 #!/usr/bin/env bash
 
-FUNCTION=$1
-BUCKET=cosmostuna-backend
-PROJECT_PATH=$HOME/projects/comptche-shop
-LAMBDA_PATH=$PROJECT_PATH/lambda
-START_PATH=`pwd`
+# exit when any command fails
+set -e
 
-cd $LAMBDA_PATH
+function=$1
+bucket=cosmostuna-backend
+lambda_path=$COSMOS_TUNA_PATH/lambda
+start_path=$(pwd)
+
+cd "$lambda_path"
 pwd
 
-MODULE_PATH="$(find . -type f -exec grep -l "module $FUNCTION" {} \; | head -n 1)"
-if [ -z "$MODULE_PATH" ]; then
-    echo Failed to find module for $FUNCTION
+module_path="$(find . -type f -exec grep -l "module $function" {} \; | head -n 1)"
+if [ -z "$module_path" ]; then
+    echo "Failed to find module for $function"
     exit 1
 else
-    echo Found lambda module at $MODULE_PATH
+    echo "Found lambda module at $module_path"
 fi
 
-echo Entering build path
-cd "$(dirname $MODULE_PATH)"
-if [ $? -eq 0 ]; then
-    pwd
-else
-    echo Failed to find $FUNCTION
-    exit 1
-fi
+build_path=$(dirname "$module_path")
 
-echo Building Lambda function $FUNCTION
+cd "$build_path"
+pwd
+
+echo "Building Lambda function $function"
 GOOS=linux go build
-if [ $? -eq 0 ]; then
-    echo Build ok
-else
-    echo Build failed
-    exit 1
-fi
 
-echo Zipping Lambda function $FUNCTION
-zip $FUNCTION.zip ./$FUNCTION
-if [ $? -eq 0 ]; then
-    echo Zip ok
-else
-    echo Zip failed
-    exit
-fi
+echo "Zipping Lambda function $function"
+zip "$function.zip" "./$function"
 
-echo Uploading Lambda binary to s3://$BUCKET/$FUNCTION.zip
-aws s3 cp $FUNCTION.zip s3://$BUCKET/$FUNCTION.zip
-if [ $? -eq 0 ]; then
-    echo Upload ok
-else
-    echo Upload failed
-    exit 1
-fi
+s3_path="s3://$bucket/$function.zip"
+echo "Uploading Lambda binary to $s3_path"
 
-echo Updating Lambda function
+aws s3 cp "$function.zip" "$s3_path"
+
+echo "Updating Lambda function"
+
 aws lambda update-function-code\
-  --function-name $FUNCTION\
-  --s3-bucket $BUCKET\
-  --s3-key $FUNCTION.zip
-if [ $? -eq 0 ]; then
-    echo Update ok
-else
-    echo Upload failed
-    exit 1
-fi
-
+    --function-name "$function" --s3-bucket "$bucket" --s3-key "$function.zip"
 
 echo Cleaning up
-rm $FUNCTION
-rm $FUNCTION.zip
-cd $START_PATH
+rm "$function"
+rm "$function.zip"
+cd "$start_path"

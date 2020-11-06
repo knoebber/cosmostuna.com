@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-TEMPLATE_PATH=$HOME/projects/comptche-shop/templates
-START_PATH=`pwd`
+set -e
 
-cd $TEMPLATE_PATH
-for f in [a-z]*.php
+template_path=$COSMOS_TUNA_PATH/templates
+start_path=$(pwd)
+echo "building site"
+
+cd "$template_path"
+for template in [a-z]*.php
 do
-    NAME="$(basename $f .php)"
-    php $f > ../$NAME.html
+    output="$(basename "$template" .php)"
+    php "$template" > ../"$output".html
 done
 
-cd $START_PATH
+cd "$start_path"
+

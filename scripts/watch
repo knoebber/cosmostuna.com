@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# build site when templates change
+
+template_path=$COSMOS_TUNA_PATH/templates
+echo "watching $template_path for changes"
+
+find "$template_path" | entr -np ./build-site
