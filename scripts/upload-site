@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 aws s3 sync "$HOME/projects/comptche-shop" s3://cosmostuna.com \
---exclude "*" \
---include "*.html" \
---include "*.png" \
---include "*.jpg" \
---include "*.css" \
---include "*.js" \
---include "favicon.ico" \
-"$1"
+    --exclude "*" \
+    --include "*.html" \
+    --include "*.png" \
+    --include "*.jpg" \
+    --include "*.css" \
+    --include "*.js" \
+    --include "favicon.ico" \
+    "$1"

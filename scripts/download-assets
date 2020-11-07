@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+aws s3 sync s3://cosmostuna.com "$COSMOS_TUNA_PATH"\
+    --exclude "*"\
+    --include "*.png"\
+    --include "*.jpg"\
+    --include "favicon.ico"\
+    "$1"
