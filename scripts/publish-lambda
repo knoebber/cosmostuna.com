@@ -38,7 +38,10 @@ aws s3 cp "$function.zip" "$s3_path"
 echo "Updating Lambda function"
 
 aws lambda update-function-code\
-    --function-name "$function" --s3-bucket "$bucket" --s3-key "$function.zip"
+    --function-name "$function"\
+    --s3-bucket "$bucket"\
+    --s3-key "$function.zip"\
+    --publish
 
 echo Cleaning up
 rm "$function"
