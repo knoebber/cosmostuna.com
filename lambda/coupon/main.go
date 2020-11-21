@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/knoebber/comptcheshop/lambda/util"
+	"github.com/knoebber/comptche-shop/lambda/util"
 	"github.com/stripe/stripe-go/coupon"
 )
 

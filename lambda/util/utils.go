@@ -45,7 +45,7 @@ var BulkOffers = [3]BulkOffer{
 	},
 }
 
-func getEnvValue(key string) (value string, err error) {
+func envValue(key string) (value string, err error) {
 	if value = os.Getenv(key); value == "" {
 		err = fmt.Errorf("$%s is not set or empty", key)
 	}
@@ -60,21 +60,27 @@ func SetStripeKey(stageName string) error {
 	)
 
 	if stageName == "prod" {
-		stripeKey, err = getEnvValue(prodStripeKey)
+		stripeKey, err = envValue(prodStripeKey)
 	} else {
-		stripeKey, err = getEnvValue(testStripeKey)
+		stripeKey, err = envValue(testStripeKey)
 	}
 
 	stripe.Key = stripeKey
 	return err
 }
 
-// GetHookSecret returns the stripe webhook secret.
-func GetHookSecret(stageName string) (string, error) {
+// HookSecret returns the stripe webhook secret.
+func HookSecret(stageName string) (string, error) {
 	if stageName == "prod" {
-		return getEnvValue(prodHookSecret)
+		return envValue(prodHookSecret)
 	}
-	return getEnvValue(testHookSecret)
+
+	return envValue(testHookSecret)
+}
+
+// SetResponseMessage sets a body like {"message": "..."}.
+func SetResponseMessage(response *events.APIGatewayProxyResponse, message string) {
+	SetResponseBody(response, map[string]string{"message": message})
 }
 
 // SetResponseBody attempts to marshal body into the Lambda response body.

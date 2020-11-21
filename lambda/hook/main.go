@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -11,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
 	"github.com/aws/aws-sdk-go/service/sns"
-	"github.com/knoebber/comptcheshop/lambda/util"
+	"github.com/knoebber/comptche-shop/lambda/util"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/webhook"
@@ -56,7 +57,7 @@ func publishMessage(stage, orderID string) {
 
 	snsTopicArn := os.Getenv("sns_topic_arn")
 	if snsTopicArn == "" {
-		fmt.Println("Must set sns_topic_arn env value to publish messages")
+		log.Print("must set sns_topic_arn env value to publish messages")
 		return
 	}
 
@@ -83,10 +84,11 @@ func publishMessage(stage, orderID string) {
 	// The second parameter is sns.PublishOutput
 	req, _ := client.PublishRequest(input)
 	if err := req.Send(); err != nil {
-		fmt.Printf("failed to publish SNS message: %v\n", err)
+		log.Printf("failed to publish SNS message: %v\n", err)
 		return
 	}
-	fmt.Println("Published to SNS topic")
+
+	log.Printf("Published to SNS topic")
 }
 
 // HandleRequest processes a lambda request.
@@ -108,7 +110,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 		return
 	}
 
-	secret, err = util.GetHookSecret(request.RequestContext.Stage)
+	secret, err = util.HookSecret(request.RequestContext.Stage)
 	if err != nil {
 		response.StatusCode = 500
 		return
@@ -223,7 +225,7 @@ func sendEmail(address, orderID, subject, body, tracking string) error {
 	if _, err := svc.SendEmail(input); err != nil {
 		return fmt.Errorf("failed to send email to %#v, %v", address, err)
 	}
-	fmt.Printf("succeeded to send email from %s to %s\n", sender, address)
+	log.Printf("succeeded to send email from %s to %s\n", sender, address)
 
 	return nil
 }

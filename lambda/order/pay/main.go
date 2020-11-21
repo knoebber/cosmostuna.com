@@ -5,7 +5,7 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/knoebber/comptcheshop/lambda/util"
+	"github.com/knoebber/comptche-shop/lambda/util"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/order"
 )
@@ -43,7 +43,6 @@ func HandleRequest(request events.APIGatewayProxyRequest) (response events.APIGa
 	}
 
 	response.StatusCode = 200
-
 	return
 }
 
